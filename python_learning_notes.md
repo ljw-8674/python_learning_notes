@@ -1424,321 +1424,163 @@ print(s.age)     # 20
 s.age = 30       # ❌ 不能设置
 ```
 
-##### 3. 多重继承
+##### 3. Mixin
 
-通过多重继承，一个子类就可以同时获得多个父类的所有功能。
+首先，Mixin（混入类）是一种“只提供功能，不单独使用”的类。
 
-在设计类的继承关系时，通常，主线都是单一继承下来的，例如，Ostrich继承自Bird。但是，如果需要“混入”额外的功能，通过多重继承就可以实现，比如，让Ostrich除了继承自Bird外，再同时继承Runnable。这种设计通常称之为MixIn。
+其特点是：
+
+- 不用于单独实例化
+- 只提供一些功能（方法）
+- 通过多重继承组合到主类里
+- 类名通常以 `Mixin` 结尾
+
+例如：
 
 ```python
-class Animal(object):
-    pass
-class Mammal(Animal):
-    pass
-class Bird(Animal):
-    pass
-class Runnable(object):
-    def run(self):
-        print('Running...')
-class Flyable(object):
-    def fly(self):
-        print('Flying...')
-class Dog(Mammal,Runnable):
-    pass
-class Bat(Mammal,Flyable):
-    pass
-class Parrot(Bird,Flyable):
-    pass
-class Ostrich(Bird,Runnable):
+class JsonMixin:
+    def to_json(self):
+        ...
+```
+
+主类只需继承它：
+
+```python
+class User(JsonMixin):
     pass
 ```
 
-为了更好地看出继承关系，我们把Runnable和Flyable改为RunnableMixIn和FlyableMixIn。类似的，你还可以定义出肉食动物CarnivorousMixIn和植食动物HerbivoresMixIn，让某个动物同时拥有好几个MixIn：
+Mixin的规则是：
 
-```python
-class Dog(Mammal, RunnableMixIn, CarnivorousMixIn):
-    pass
-```
+- 小而专一（单一功能）
+- 不依赖外部状态
+- 不要有自己的 `__init__`
+- 类名以 `XXXMixin` 结尾
 
-MixIn的目的就是给一个类增加多个功能，这样，在设计类的时候，我们优先考虑通过多重继承 来组合多个MixIn的功能，而不是设计多层次的复杂的继承关系。
-
-Python自带的很多库也使用了MixIn。举个例子，Python自带了TCPServer和UDPServer这 两类网络服务，而要同时服务多个用户就必须使用多进程或多线程模型，这两种模型由ForkingMixIn和ThreadingMixIn提供。通过组合，我们就可以创造出合适的服务来。
-
-```python
-# 定义一个多进程模式的TCP服务
-class MyTCPServer(TCPServer, ForkingMixIn):
-    pass
-# 定义一个多线程模式的UDP服务
-class MyUDPServer(UDPServer, ThreadingMixIn):
-    pass
-```
-
-这样一来，我们不需要复杂而庞大的继承链，只要选择组合不同的类的功能，就可以快速构造出所需的子类。
+Mixin是Python中最佳的可组合代码复用方案，常用于日志、序列化、权限、缓存等功能，通过多重继承让类“想要什么功能就混什么功能”。
 
 ##### 4. 定制类
 
-看到类似 `__slots__` 这种形如 `__xxx__` 的变量或者函数名就要注意，这些在Python中是有特殊用途的。 `__slots__` 我们已经知道怎么用了， `__len__()` 方法我们也知道是为了能让class作用于 `len()` 函数。 除此之外，Python的class中还有许多这样有特殊用途的函数，可以帮助我们定制类。
+通过实现特殊方法（以 `__xxx__` 命名的“魔术方法”）来自定义类的行为，让你的对象像内置类型一样使用。
 
 - `__str__` 和 `__repr__`
 
-直接打印一个示例，会打印出形如 `<__main__.Student object at 0x109afb190>` 的信息。
+不做处理时，我们直接打印一个实例obj，会打印出形如 `<__main__.Student object at 0x109afb190>` 的信息。怎么才能打印得好看呢？
 
-`__str__` 方法，作用是定义“对象的非正式字符串表示”，主要用于 **用户友好的输出** ，其触发时机为 `print(obj)` 和 `str(obj)` 。
+首先， `__str__` 方法，作用是定义“对象的非正式字符串表示”，主要用于用户友好的输出，其触发时机为 `print(obj)` 和 `str(obj)` 。
 
  ```python
  class Student(object):
      def __init__(self, name):
          self.name = name
      def __str__(self):
-         return f'Student object (name: {self.name})'
-     
- s = Student('Michael')    
- print(s) # Student object (name: Michael)
- print(str(s)) # Student object (name: Michael)
+         return f'Student({self.name})'
+ 
+ s = Student('JJLin')    
+ print(s) # Student(JJLin)
+ print(str(s)) # Student(JJLin)
  ```
 
-`__repr__` 方法，作用是定义“对象的官方字符串表示”，主要用于 **调试和开发** ，其触发时机为：（1）在交互式解释器里直接输入实例对象名；（2）调用 `repr(obj)` 时；（3）没有实现 `__str__` 时，`str(obj)` 会回退到 `__repr__`。
+其次， `__repr__` 方法，作用是定义“对象的官方字符串表示”，主要用于调试和开发 ，其触发时机为：
 
-通常 `__str__()` 和 `__repr__()` 代码都是一样的， 所以，有个偷懒的写法：
-
-```python
-class Student(object):
-    def __init__(self, name):
-        self.name = name
-    def __str__(self):
-        return f'Student object (name={self.name})' 
-    __repr__ = __str
-```
+1. 在交互式解释器里直接输入实例对象名；
+2. 调用 `repr(obj)` 时；
+3. 没有实现 `__str__` 时，直接或间接使用`str(obj)` 会回退到 `__repr__`。
 
 - `__iter__` 和 `__next__`
 
-如果一个类想被用于 `for ... in` 循环，类似list或tuple那样，就必须实现一个 `__iter__()` 方法，该方法返回一个迭代对象，然后，Python的for循环就会不断调用该迭代对象的 `__next__()` 方法拿到循环的下一个值，直到遇到StopIteration错误时退出循环。
+如果一个类想被用于for循环，类似list或tuple那样，就必须实现一个 `__iter__()` 方法，该方法返回一个可迭代对象，然后，Python的for循环就会不断调用该迭代对象的 `__next__()` 方法拿到循环的下一个值，直到遇到StopIteration错误时退出循环。
+
+以斐波那契数列为例，写一个Fib类如下：
 
 ```python
-class Fib(object):
+class MyFib(object):
     def __init__(self):
-        self.a, self.b = 0, 1 # 初始化两个计数器a，b
+        self.a = 0
+        self.b = 1 
 
     def __iter__(self):
-        return self # 实例本身就是迭代对象，故返回自己
+        return self
 
     def __next__(self):
-        self.a, self.b = self.b, self.a + self.b # 计算下一个值
-        if self.a > 100000: # 退出循环的条件
+        self.a, self.b = self.b, self.a + self.b
+        if self.a > 100:
             raise StopIteration()
-        return self.a # 返回
-
-nums = Fib()
-for n in nums:
-    print(n)
+        return self.a
 ```
 
 - `__getitem__`
 
-Fib实例对象虽然能作用于for循环，但并不能按照下标取出元素。要表现得像list那样 **按照下标取出元素** ，需要实现 `__getitem__()` 方法：
+Fib实例对象虽然能作用于for循环，但并不能按照下标取出元素。要表现得像list那样按照下标取出元素，需要实现 `__getitem__()` 方法：
 
 ```python
-class Fib(object):
+class MyFib(object):
+    def __init__(self):
+        self.a = 0
+        self.b = 1 
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.a, self.b = self.b, self.a + self.b
+        return self.a
+	
     def __getitem__(self, n):
-        a, b = 1, 1
-        for x in range(n):
-            a, b = b, a + b
-        return a
-nums = Fib()
-print(nums[5])
+        for _ in range(n):
+            self.a, self.b = self.b, self.a + self.b
+        return self.a
 ```
 
-如果要使Fib实例对象可以 **切片** ，则可以做如下改进：
+若要实现切片，则需做以下判断：
 
 ```python
-class Fib(object):
-    def __getitem__(self, n):  # 对传入的 n 进行判断
-        if isinstance(n, int):  # n 是整数，下标访问
+class MyFib(object):
+    def __init__(self):
+        self.a = 1
+        self.b = 1 
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.a, self.b = self.b, self.a + self.b
+        # if self.a > 100:
+        #     raise StopIteration()
+        return self.a
+	
+    def __getitem__(self, n):
+        # 不考虑负数索引
+        if isinstance(n, int):
             a, b = 1, 1
-            for x in range(n):
+            for _ in range(n):
                 a, b = b, a + b
             return a
-
-        if isinstance(n, slice):  # n 是切片，形如 f[2:6]
-            start = n.start
-            stop = n.stop
-            if start is None:
-                start = 0
+        
+        if isinstance(n, slice):
             a, b = 1, 1
             L = []
-            for x in range(stop):
-                if x >= start:
-                    L.append(a)
-                a, b = b, a + b
+            start = n.start or 0
+            stop = n.stop
+            step = n.step or 1
+            for i in range(start, stop, step):
+                for _ in range(i):
+                    a, b = b, a + b
+                L.append(a)
+                a, b = 1, 1
             return L
 
-nums = Fib()
-print(nums[：5])
+nums = MyFib()
+print(nums)
+print(nums[10])
+print(nums[0:10:2])
 ```
 
-我们可以发现，我们还没有对step参数作处理，也没有对负数作处理，所以，要正确实现一个 `__getitem__()` 还是有很多工作要做的。此外，如果把对象看成dict ， `__getitem__()` 的参数也可能是一个可以作key的object，例如str。 与之对应的是 `__setitem__()` 方法，把对象视作list或dict来对集合赋值。最后，还有一个 `__delitem__()` 方法，用于删除某个元素。 总之，通过上面的方法，我们自己定义的类表现得和Python自带的list、tuple、dict没什么区别，这完全归功于动态语言的“鸭子类型”，不需要强制继承某个接口。
+到这里，可以发现，我们还没有对负数作处理，所以，要正确实现一个 `__getitem__()` 还是有很多工作要做的。
 
-- `__gerattr__`
+此外，如果把对象看成 `dict` ， `__getitem__()` 的参数也可能是一个可以作key的object，例如`str`。与之对应的是 `__setitem__()` 方法，把对象视作list或dict来对集合赋值。最后，还有一个 `__delitem__()` 方法，用于删除某个元素。
 
-正常情况下，当我们调用类的方法或属性时，如果不存在，就会报错。要避免这个错误，除了可以加上一个score属性外，Python还有另一个机制，那就是写一个 `__getattr__()` 方法，动态返回一个属性。
-
-```python
-class Student(object):
-    def __init__(self):
-        self.name = 'Michael'
-    def __getattr__(self, attr):
-        if attr=='score':
-            return 99
-```
-
-当调用不存在的属性时，比如score，Python解释器会试图调用 `__getattr__(self, 'score')` 来尝试获得属性，这样，我们就有机会返回score的值。
-
-```python
->>> s = Student()
->>> s.name
-'Michael'
->>> s.score
-99
-```
-
-与此同时，返回函数也是完全可以的：
-
-```python
-class Student(object):
-    def __getattr__(self, attr):
-        if attr=='age':
-            return lambda: 25
-    
-s = Student()
-s.age()  # 25
-```
-
-只有在没有找到属性的情况下，才调用 `__getattr__` ，已有的属性，比如name，不会在 `__getattr__` 中查找。此外，注意到任意调用如 `s.abc` 都会返回 `None` ，这是因为我们定义的 `__getattr__` 默认返回就是 `None` 。要让class只响应特定的几个属性，我们就要按照约定，抛出 `AttributeError` 的错误：
-
-```	python
-class Student(object):
-    def __getattr__(self, attr):
-        if attr=='age':
-            return lambda: 25
-        raise AttributeError(f"\'Student\' object has no attribute \'{attr}\'")
-```
-
-##### 5. 使用枚举类
-
-为枚举类型定义一个class类型，然后，每个常量都是class的一个唯一实例。可以直接使用 `Month.Jan` 来引用一个常量，或者枚举它的所有成员：
-
-```python
->>> from enum import Enum
->>> Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
->>> for name, member in Month.__members__.items():
-...     print(name, '=>', member, ',', member.value)
-...
-Jan => Month.Jan , 1
-Feb => Month.Feb , 2
-Mar => Month.Mar , 3
-Apr => Month.Apr , 4
-May => Month.May , 5
-Jun => Month.Jun , 6
-Jul => Month.Jul , 7
-Aug => Month.Aug , 8
-Sep => Month.Sep , 9
-Oct => Month.Oct , 10
-Nov => Month.Nov , 11
-Dec => Month.Dec , 12
-```
-
-其中的 `value` 属性是自动赋给成员的int常量，默认从1开始计数。
-
-如果需要更精确地控制枚举类型，可以从 `Enum` 派生出自定义类，其中的 `@unique` 装饰器可以帮助我们检查保证没有重复值：
-
-```python
-from enum import Enum, unique
-
-@unique
-class Weekday(Enum):
-    Sun = 0 # Sun的value被设定为0
-    Mon = 1
-    Tue = 2
-    Wed = 3
-    Thu = 4
-    Fri = 5
-    Sat = 6
-```
-
-访问这些枚举类型可以有若干种方法，既可以用成员名称引用枚举常量，又可以直接根据value的值获得枚举常量：
-
-```python
->>> day1 = Weekday.Mon
->>> print(day1)
-Weekday.Mon
->>> print(Weekday.Tue)
-Weekday.Tue
->>> print(Weekday['Tue'])
-Weekday.Tue
->>> print(Weekday.Tue.value)
-2
->>> print(day1 == Weekday.Mon)
-True
->>> print(day1 == Weekday.Tue)
-False
->>> print(Weekday(1))
-Weekday.Mon
->>> print(day1 == Weekday(1))
-True
->>> Weekday(7)
-Traceback (most recent call last):
-  ...
-ValueError: 7 is not a valid Weekday
-```
-
-`Enum` 可以把一组相关常量定义在一个class中，且class不可变，而且成员可以直接比较。
-
-##### 6. 使用元类
-
-在Python中，`type()` 函数的行为取决于传入参数的类型：
-
-- 当传入一个类名时，`type()` 会返回该类的元类（通常是 `<class 'type'>` ）。
-
-```python
-class MyClass: 
-    pass
-print(type(MyClass))  # 输出 <class 'type'>
-```
-
-- 当传入一个实例名时，`type()` 会返回该实例所属的类（即实例的直接类型）。
-
-```python
-obj = MyClass()
-print(type(obj))  # 输出 <class '__main__.MyClass'>
-```
-
-这两种行为体现了Python的"一切皆对象"设计理念——类本身也是对象（元类的实例），而实例则是类的对象。通过 `type()` 的返回值可以清晰区分元类、类和实例这三层关系。
-
-由此可见，`type()` 函数既可以返回一个对象的类型，又可以创建出新的类型，比如，我们可以通过 `type()` 函数动态地创建出 `Hello` 类，而无需通过 `class Hello(object)...` 的定义：
-
-```python
->>> def fn(self, name='world'): # 先定义函数
-... 	print(f'Hello, {name}.')
-...
->>> Hello = type('Hello', (object,), dict(hello=fn)) # 创建Hello class
->>> h = Hello()
->>> h.hello()
-Hello, world.
->>> print(type(Hello))
-<class 'type'>
->>> print(type(h))
-<class '__main__.Hello'>
-```
-
-要创建一个class对象， `type()` 函数依次传入3个参数（类名，基类元组，属性字典）：
-
-1. class的名称；
-2. 继承的父类集合，注意Python支持多重继承，如果只有一个父类，别忘了tuple的单元素写法；
-3. class的方法名称与函数绑定，这里我们把函数 `fn` 绑定到方法名 `hello` 上。
-
-通过 `type()` 函数创建的类和直接写class是完全一样的，因为Python解释器遇到class定义时， 仅仅是扫描一下class定义的语法，然后调用 `type()` 函数创建出class。 
-
-mataclass部分的内容先省略。
+总之，通过上面的方法，我们自己定义的类表现得和Python自带的list、tuple、dict没什么区别，这完全归功于动态语言的“鸭子类型”，不需要强制继承某个接口。
 
 ### 错误、调试和测试
 
