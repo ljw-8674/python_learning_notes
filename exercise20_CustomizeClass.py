@@ -1,6 +1,6 @@
 class MyFib(object):
     def __init__(self):
-        self.a = 1
+        self.a = 0
         self.b = 1 
 
     def __iter__(self):
@@ -8,34 +8,41 @@ class MyFib(object):
 
     def __next__(self):
         self.a, self.b = self.b, self.a + self.b
-        # if self.a > 100:
-        #     raise StopIteration()
+        # 限制打印输出
+        if self.a > 1000:
+            raise StopIteration()
         return self.a
-	
+
     def __getitem__(self, n):
-        # 不考虑负数索引
         if isinstance(n, int):
+            if n < 0:
+                raise IndexError("不支持负数索引！")
             a, b = 1, 1
+            # 循环几次就是去取索引为几的值
             for _ in range(n):
                 a, b = b, a + b
             return a
-        
         if isinstance(n, slice):
-            a, b = 1, 1
-            L = []
-            start = n.start or 0
-            stop = n.stop
-            step = n.step or 1
-            for i in range(start, stop, step):
-                for _ in range(i):
-                    a, b = b, a + b
-                L.append(a)
-                a, b = 1, 1
-            return L
+            x = n.start or 0
+            y = n.stop
+            z = n.step or 1
+            if x < 0 or y <= 0 or y is None:
+                raise IndexError("索引错误！")
+            res = []
+            a, b = 0, 1
+            # 切片是左闭右开，右索引的值取不到
+            for i in range(y-1):
+                a, b = b, a + b
+                # 取最后一个值会经历中间的值，按需取出来即可
+                if i >= x and (i - x) % z == 0:
+                    res.append(a)
+            return res
 
-# 1, 1, 2, 3, 5, 8, 13, ...
-# 0, 1, 2, 3, 4, 5, 6, ...
-nums = MyFib()
-print(nums)
-print(nums[6])
-print(nums[0:6:2])
+if __name__=="__main__":
+    fib = MyFib()
+    for n in fib:
+        print(n)
+    print("=" * 20)
+    print(fib[10])
+    print("=" * 20)
+    print(fib[:10:2])    

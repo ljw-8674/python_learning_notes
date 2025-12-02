@@ -1537,7 +1537,7 @@ class MyFib(object):
 ```python
 class MyFib(object):
     def __init__(self):
-        self.a = 1
+        self.a = 0
         self.b = 1 
 
     def __iter__(self):
@@ -1545,42 +1545,166 @@ class MyFib(object):
 
     def __next__(self):
         self.a, self.b = self.b, self.a + self.b
-        # if self.a > 100:
-        #     raise StopIteration()
+        # 限制打印输出
+        if self.a > 1000:
+            raise StopIteration()
         return self.a
-	
+
     def __getitem__(self, n):
-        # 不考虑负数索引
         if isinstance(n, int):
+            if n < 0:
+                raise IndexError("不支持负数索引！")
             a, b = 1, 1
+            # 循环几次就是去取索引为几的值
             for _ in range(n):
                 a, b = b, a + b
             return a
-        
         if isinstance(n, slice):
-            a, b = 1, 1
-            L = []
-            start = n.start or 0
-            stop = n.stop
-            step = n.step or 1
-            for i in range(start, stop, step):
-                for _ in range(i):
-                    a, b = b, a + b
-                L.append(a)
-                a, b = 1, 1
-            return L
+            x = n.start or 0
+            y = n.stop
+            z = n.step or 1
+            if x < 0 or y <= 0 or y is None:
+                raise IndexError("索引错误！")
+            res = []
+            a, b = 0, 1
+            # 切片是左闭右开，右索引的值取不到
+            for i in range(y-1):
+                a, b = b, a + b
+                # 取最后一个值会经历中间的值，按需取出来即可
+                if i >= x and (i - x) % z == 0:
+                    res.append(a)
+            return res
 
-nums = MyFib()
-print(nums)
-print(nums[10])
-print(nums[0:10:2])
+if __name__=="__main__":
+    fib = MyFib()
+    for n in fib:
+        print(n)
+    print("=" * 20)
+    print(fib[10])
+    print("=" * 20)
+    print(fib[:10:2])    
 ```
-
-到这里，可以发现，我们还没有对负数作处理，所以，要正确实现一个 `__getitem__()` 还是有很多工作要做的。
 
 此外，如果把对象看成 `dict` ， `__getitem__()` 的参数也可能是一个可以作key的object，例如`str`。与之对应的是 `__setitem__()` 方法，把对象视作list或dict来对集合赋值。最后，还有一个 `__delitem__()` 方法，用于删除某个元素。
 
 总之，通过上面的方法，我们自己定义的类表现得和Python自带的list、tuple、dict没什么区别，这完全归功于动态语言的“鸭子类型”，不需要强制继承某个接口。
+
+- `__getattr__`
+
+`__getattr__` 是 Python 对象模型里一个非常重要的“动态属性访问钩子”，它允许你在访问一个不存在的属性时，自定义行为。
+
+当访问 `obj.xxx`，而 `xxx` 这个属性不存在时，Python会自动调用 `obj.__getattr__` 。
+
+当然，如果属性存在，则不会调用 `__getattr__`。
+
+```python
+class Student(object):
+    def __init__(self):
+        self.name = 'Michael'
+
+    def __getattr__(self, attr):
+        if attr=='score':
+            return 99
+
+s = Student()
+print(s.name)	# Michael
+print(s.score)	# 99
+```
+
+此外，任意调用如 `s.abc` 都会返回 `None` ，这是因为我们定义的 `__getattr__` 默认返回就是 `None` 。要让class只响应特定的几个属性，我们就要按照约定，抛出 `AttributeError` 的错误：
+
+```python
+class Student(object):
+    def __getattr__(self, attr):
+        if attr=='age':
+            return lambda: 25
+        raise AttributeError(f"\'Student\' object has no attribute \'{attr}\'")
+```
+
+- `__call__`
+
+定义一个 `__call__()` 方法，就可以直接对实例进行调用。
+
+```python
+class Student(object):
+    def __init__(self, name):
+        self.name = name
+
+    def __call__(self):
+        print('My name is {self.name}.')
+        
+s = Student('Michael')
+s() # My name is Michael.
+```
+
+还可以定义参数。对实例进行直接调用就好比对一个函数进行调用一样，所以你完全可以把对象看成函数，把函数看成对象，因为这两者之间本来就没啥根本的区别。
+
+怎判断一个对象是否能被调用，能被调用的对象就是一个 `Callable` 对象。
+
+```python
+>>> callable(Student())
+True
+>>> callable(max)
+True
+>>> callable([1, 2, 3])
+False
+>>> callable(None)
+False
+>>> callable('str')
+False
+```
+
+##### 5. 使用枚举类
+
+定义枚举类如下，这样我们就获得了一个枚举类Month，可以直接使用 `Month.Jan` 来引用一个常量，或者枚举它的所有成员：
+
+```python
+from enum import Enum
+
+Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
+for name, member in Month.__members__.items():
+    print(name, '=>', member, ',', member.value)
+```
+
+其中， `Enum` 的第一个参数是枚举的类名，第二个参数是一个包含枚举成员名称的元组。`value` 属性是自动赋给成员的int常量，默认从1开始计数。输出结果是：
+
+```python
+Jan => Month.Jan , 1
+Feb => Month.Feb , 2
+Mar => Month.Mar , 3
+Apr => Month.Apr , 4
+May => Month.May , 5
+Jun => Month.Jun , 6
+Jul => Month.Jul , 7
+Aug => Month.Aug , 8
+Sep => Month.Sep , 9
+Oct => Month.Oct , 10
+Nov => Month.Nov , 11
+Dec => Month.Dec , 12
+```
+
+如果需要更精确地控制枚举类型，可以从 `Enum` 派生出自定义类：
+
+```python
+from enum import Enum, unique
+
+@unique
+class Weekday(Enum):
+    Sun = 0 # Sun的value被设定为0
+    Mon = 1
+    Tue = 2
+    Wed = 3
+    Thu = 4
+    Fri = 5
+    Sat = 6
+```
+
+其中，`@unique` 装饰器可以帮助我们检查保证没有重复值。
+
+##### 6. 使用元类
+
+Skip~
 
 ### 错误、调试和测试
 
