@@ -1706,11 +1706,11 @@ class Weekday(Enum):
 
 Skip~
 
-### 错误、调试和测试
+### 七、错误、调试和测试
 
 ##### 1. 错误处理
 
-Python内置的 `try...except...` 用来捕获错误十分方便。出错时，会分析错误信息并定位错误发生的代码位置才是最关键的。 
+Python内置的 `try...except...` 用来捕获异常十分方便。出错时，会分析错误信息并定位错误发生的代码位置才是最关键的。 
 
 - `else`：当 `try` 语句块里没有异常时执行
 
@@ -1718,20 +1718,25 @@ Python内置的 `try...except...` 用来捕获错误十分方便。出错时，�
 
 ```python
 try:
-    print('try...')
-    r = 10 / int('2')
-    print('result:', r)
+    print('【Begin】')
+    x = input('Enter an integer：')
+    r = 10 / int(x)
+    print(f'10 / {x} = {r}:')
+
 except ValueError as e:
     print('ValueError:', e)
+
 except ZeroDivisionError as e:
     print('ZeroDivisionError:', e)
+
 else:
-    print('no error!')
+    print('No error!')
+
 finally:
-    print('finally...')
+    print('【End】')
 ```
 
-程序也可以主动抛出（raise）错误，让调用者来处理相应的错误。但是，应该在文档中写清楚可能会抛出哪些错误，以及错误产生的原因：
+程序也可以主动抛出异常，让调用者来处理相应的错误。但是，应该在文档中写清楚可能会抛出哪些错误，以及错误产生的原因：
 
 ```python
 def divide(a, b):
@@ -1742,6 +1747,8 @@ def divide(a, b):
 print(divide(10, 2))
 print(divide(10, 0))  # 会触发 ValueError
 ```
+
+换一种说法，捕获异常是“接住错误”，作用是防止程序崩溃，处理错误；抛出异常是“制造或传递错误”，作用是主动报告错误。
 
 自定义异常类，继承内置 `Exception`，可以定义自己的业务逻辑错误类型：
 
@@ -1755,49 +1762,18 @@ except MyError as e:
     print("捕获到自定义异常：", e)
 ```
 
-Python内置的 `logging` 模块可以把异常信息写入日志，便于排查：
-
-```	python
-import logging
-
-logging.basicConfig(level=logging.ERROR)
-
-try:
-    1 / 0
-except ZeroDivisionError as e:
-    logging.error("发生错误", exc_info=True)
-```
-
 ##### 2. 调试
 
 - print() 打印变量值
 - assert 断言
 
-```python
-def foo(s):
-    n = int(s)
-    assert n != 0, 'n is zero!'
-    return 10 / n
-def main():
-    foo('0')
-```
-
-如果断言失败， `assert` 语句本身就会抛出 `AssertionError` ：
+如果断言成功，无事发生；而如果断言失败， `assert` 语句本身就会抛出 `AssertionError` ：
 
 ```python
-$ python err.py
+D:\PythonProject\general>python tmp_code.py
 Traceback (most recent call last):
   ...
 AssertionError: n is zero!
-```
-
-启动Python解释器时可以用 `-O` 参数来关闭 `assert` ，关闭后，你可以把所有的 `assert` 语句当成 `pass` 来看：
-
-```python
-$ python -O err.py
-Traceback (most recent call last):
-  ...
-ZeroDivisionError: division by zero
 ```
 
 - logging
@@ -1806,28 +1782,28 @@ ZeroDivisionError: division by zero
 
 ```python
 import logging
+
 logging.basicConfig(level=logging.INFO)
 
 s = '0'
 n = int(s)
-logging.info('n = %d' % n)
+logging.info(f'n = {n}')
 print(10 / n)
 ```
 
 运行后输出了：
 
 ```python
-$ python err.py
+D:\PythonProject\general>python tmp_code.py
 INFO:root:n = 0
 Traceback (most recent call last):
-  File "err.py", line 8, in <module>
+  File "D:\PythonProject\general\tmp_code.py", line 8, in <module>
     print(10 / n)
+          ~~~^~~
 ZeroDivisionError: division by zero
 ```
 
 `logging` 允许你指定记录信息的级别，有 `debug` ， `info` ， `warning` ， `error` 等几个级别，当我们指定 `level=INFO` 时， `logging.debug` 就不起作用了。同理，指定 `level=WARNING` 后， `debug` 和 `info` 就不起作用了。这样一来，你可以放心地输出不同级别的信息，也不用删除，最后统一控制输出哪个级别的信息。 
-
-此外，`logging` 还可以通过简单的配置，一条语句可以同时输出到不同的地方，比如console和文件。
 
 - IDE
 
@@ -1854,14 +1830,16 @@ PyCharm：http://www.jetbrains.com/pycharm/
 3. 输入 `0` ，期待返回 `0` ；
 4. 输入非数值类型，比如 `None` 、 `[]` 、 `{}` ，期待抛出 `TypeError` 。 把上面的测试用例放到一个测试模块里，就是一个完整的单元测试。
 
-先来写个待测试类， `mydict.py` :
+先来写个待测试类， `my_dict.py` :
 
 ```python
-class Dict(dict):
-    def __init___(self,**kw):
+class MyDict(dict):
+    """支持点访问的字典"""
+    
+    def __init___(self, **kw):
         super().__init__(**kw)
 
-    def __grtattr__(self,key):
+    def __getattr__(self, key):
         try:
             return self[key]
         except KeyError:
@@ -1871,11 +1849,10 @@ class Dict(dict):
         self[key] = value
 ```
 
-然后写测试类， `mydict_test.py` :
+然后写测试类， `my_dict_test.py` :
 
 ```python
 import unittest
-
 from mydict import Dict
 
 class TestDict(unittest.TestCase):
@@ -1906,39 +1883,38 @@ class TestDict(unittest.TestCase):
         d = Dict()
         with self.assertRaises(AttributeError):
             value = d.empty
-
-if __name__ == '__main__':
-    unittest.main()
 ```
 
-一旦编写好单元测试，我们就可以运行单元测试。最简单的运行方式是在 `mydict_test.py` 的最后加上两行代码，这样就可以把它当做正常的python脚本运行：：
+一旦编写测试类，我们就可以运行单元测试。最简单的运行方式是在 `my_dict_test.py` 的最后加上两行代码，这样就可以把它当做正常的python脚本运行：：
 
 ```python
 if __name__ == '__main__':
     unittest.main()
 ```
 
-另一种方法是在命令行通过参数 `-m unittest` 直接运行单元测试，这是推荐的做法，因为这样可以一次批量运行很多单元测试，并且，有很多工具可以自动来运行 这些单元测试：
+另一种方法是在命令行通过参数 `-m unittest` 直接运行单元测试，这是推荐的做法，因为这样可以一次批量运行很多单元测试，并且，有很多工具可以自动来运行这些单元测试：
 
 ```python
-$ python -m unittest mydict_test
+D:\PythonProject\general>python -m unittest my_dict_test
 .....
 ----------------------------------------------------------------------
-Ran 5 tests in 0.000s
+Ran 5 tests in 0.001s
+
 OK
 ```
 
 在开发阶段，很多时候，我们希望反复执行某一个测试方法，例如 `test_attr()` ，而不是每次都运行所有的测试方法，可以通过指定 `module.class.method` 来运行单个测试方法：
 
 ```python
-$ python -m unittest mydict_test.TestDict.test_attr
+D:\PythonProject\general>python -m unittest my_dict_test.TestDict.test_attr
 .
 ----------------------------------------------------------------------
 Ran 1 test in 0.000s
+
 OK
 ```
 
-其中， `module` 是文件名 `mydict_test` （不含 .py ）， `class` 是测试类 `TestDict` ， `method` 是指定的测试方法名 `test_attr` 。
+其中， `module` 是文件名 `my_dict_test` （不含 .py ）， `class` 是测试类 `TestDict` ， `method` 是指定的测试方法名 `test_attr` 。
 
 也可以在单元测试中编写两个特殊的 `setUp()` 和 `tearDown()` 方法。这两个方法会分别在每调用一个测试方法的前后分别被执行。
 
@@ -1948,6 +1924,7 @@ OK
 class TestDict(unittest.TestCase):
     def setUp(self):
         print('setUp...')
+
     def tearDown(self):
         print('tearDown...')
 ```
@@ -1978,16 +1955,20 @@ def abs(n):
  return n if n >= 0 else (-n)
 ```
 
-Python内置的“文档测试”（doctest）模块可以直接提取注释中的代码并执行测试。
+Python内置的“文档测试”（doctest）模块可以直接提取注释中的代码并执行测试。doctest可以严格按照Python交互式命令行的输入和输出来判断测试结果是否正确。
 
-doctest严格按照Python交互式命令行的输入和输出来判断测试结果是否正确。只有测试异常的时候，可以用 `...` 表`示中间一大段烦人的输出。
+当模块正常导入时，doctest不会被执行。在命令行直接运行时：
 
-当模块正常导入时，doctest不会被执行。只有在命令行直接运行时，才执 行doctest。所以，不必担心doctest会在非测试环境下执行。
+```bash
+python -m doctest -v xxx.py
+```
+
+在代码中运行时：
 
 ```python
 if __name__ == '__main__':
 	import doctest
-	doctest.testmod()
+	doctest.testmod(verbose=True)
 ```
 
 运行结果为什么输出也没有，这说明我们编写的doctest运行都是正确的。
