@@ -1981,7 +1981,7 @@ doctest不但可以用来测试，还可以直接作为示例代码。通过某�
 
 ##### 1. 文件读写
 
-首先是读文件，可以使用Python内置的 `open()` 函数，传入文件名和标示符：
+首先是读文件，可以使用Python内置的 `open()` 函数，传入文件路径和标示符：
 
 ```python
 >>> f = open('/Users/michael/test.txt', 'r')
@@ -2011,39 +2011,23 @@ FileNotFoundError: [Errno 2] No such file or directory:'/Users/michael/notfound.
 >>> f.close()
 ```
 
-由于文件读写时都有可能产生 `IOError` ，一旦出错，后面的 `f.close()` 就不会调用。所以，为了保证无论是否出错都能正确地关闭文件，我们可以使用 `try ... finally` 来实现：
-
-```python
-try:
-	f = open('/path/to/file', 'r')
- 	print(f.read())
-finally:
-	if f:
-		f.close()
-```
-
-但是每次都这么写实在太繁琐，所以，Python引入了 `with` 语句（语法糖）来自动帮我们调用 `close()` 方法：
+由于文件读写时都有可能产生 `IOError` ，一旦出错，后面的 `f.close()` 就不会调用。所以，为了保证每次都能关闭文件，我们可以使用 `with` 语句来自动帮我们调用 `close()` 方法：
 
 ```python
 with open('/path/to/file', 'r') as f: 
     print(f.read())
 ```
 
-读取方式也有多种，可以根据需要决定怎么调用：
+值得一提的是，读取方式也有多种，可以根据需要决定怎么调用：
 
 - 调用 `read()` 会一次性读取文件的全部内容
 - 调用 `read(size)` 方法，每次最多读取size个字节的内容
 - 调用 `readline()` 每次读取一行内容
-- 调用 `readlines()` 一次读取所有内容并按行返回 `list` 
+- 调用 `readlines()` 一次读取所有内容并按行返回1个列表
 
-如果文件很小， `read()` 一次性读取最方便；如果不能确定文件大小，反复调用 `read(size)` 比较保险；如果是配置文件，调用 `readlines()` 最方便：
+如果文件很小， `read()` 一次性读取最方便；如果不能确定文件大小，反复调用 `read(size)` 比较保险；如果是配置文件，调用 `readlines()` 最方便。
 
-```python
-for line in f.readlines():
-	print(line.strip()) # 把末尾的'\n'删掉
-```
-
-值得一提的是，前面讲的默认都是读取 **文本文件** ，并且是UTF-8编码的文本文件。要读取 **二进制文件** ，比如图 片、视频等等，用 `'rb'` 模式打开文件即可：
+前面讲的默认都是读取文本文件，并且是UTF-8编码的文本文件。要读取二进制文件 ，比如图片、视频等等，用 `'rb'` 模式打开文件即可：
 
 ```python
 >>> f = open('/Users/michael/test.jpg', 'rb')
@@ -2057,7 +2041,7 @@ b'\xff\xd8\xff\xe1\x00\x18Exif\x00\x00...' # 十六进制表示的字节
 
 - `f.seek(offset)`：移动文件指针。
 
-再来说说写文件，其与读文件是一样的，唯一区别是调用 `open()` 函数时，传入标识符 `'w'` 或者 `'wb'` 表示写文本文件或写二进制文件：
+再来说说写文件，其与读文件是一样的，唯一区别是调用 `open()` 函数时，传入标示符 `'w'` 或者 `'wb'` 表示写文本文件或写二进制文件：
 
 ```python
 >>> f = open('/Users/michael/test.txt', 'w')
@@ -2065,33 +2049,33 @@ b'\xff\xd8\xff\xe1\x00\x18Exif\x00\x00...' # 十六进制表示的字节
 >>> f.close()
 ```
 
-你可以反复调用 `write()` 来写入文件，但是务必要调用 `f.close()` 来关闭文件。当我们写文件时，操作系统往往不会立刻把数据写入磁盘，而是放到内存缓存起来，空闲的时候再慢慢写入。只有调用 `close()` 方法时，操作系统才保证把没有写入的数据全部写入磁盘。忘记调用 `close()` 的后果是数据可能只写了一部分到磁盘，剩下的丢失了。所以，还是用 `with` 语句来得保险：
+你可以反复调用 `write()` 来写入文件，但是务必要调用 `f.close()` 来关闭文件。当我们写文件时，操作系统往往不会立刻把数据写入磁盘，而是放到内存缓存起来，空闲的时候再慢慢写入。只有调用 `close()` 方法时，操作系统才保证把没有写入的数据全部写入磁盘，忘记调用 `close()` 的后果是数据可能只写了一部分到磁盘，剩下的丢失了。当然，使用with语句就没有这个顾虑了。
 
-```python
-with open('/Users/michael/test.txt', 'w') as f:
-	f.write('Hello, world!')
-```
-
-以 `'w'` 模式写入文件时，如果文件已存在，会直接覆盖。如果我们希望追加到文件末尾，可以传入 `'a'` 以追加模式写入。
+需要说明的是，以 `'w'` 模式写入文件时，如果文件已存在，会直接覆盖。如果我们希望追加到文件末尾，可以传入 `'a'` 以追加模式写入。
 
 ##### 2. 操作文件和目录
 
-操作文件和目录的函数一部分放在 `os` 模块中，一部分放在 `os.path` 模块中。**查看、创建和删除目录**可以这么调用：
+操作文件和目录的函数一部分放在 `os` 模块中，一部分放在 `os.path` 模块中。查看、创建和删除目录如下：
 
 ```python
+>>> import os
+
 # 1.查看当前目录的绝对路径:
 >>> os.path.abspath('.')
 '/Users/michael'
+
 # 2.把新目录的完整路径表示出来:
 >>> os.path.join('/Users/michael', 'testdir')
 '/Users/michael/testdir'
+
 # 3.然后创建一个目录:
 >>> os.mkdir('/Users/michael/testdir')
+
 # 4.删掉一个目录:
 >>> os.rmdir('/Users/michael/testdir')
 ```
 
-注意，把两个路径合成一个时，**不要直接拼字符串**，而要通过 `os.path.join()` 函数，这样可以正确处理不同操作系统的路径分隔符。
+注意，把两个路径合成一个时，不要直接拼字符串，而要通过 `os.path.join()` 函数，这样可以正确处理不同操作系统的路径分隔符。
 
 同样的道理，要拆分路径时，也不要直接去拆字符串，而要通过 `os.path.split()` 函数，这样可以把一个路径拆分为两部分，后一部分总是最后级别的目录或文件名：
 
@@ -2100,7 +2084,7 @@ with open('/Users/michael/test.txt', 'w') as f:
 ('/Users/michael/testdir', 'file.txt')
 ```
 
-`os.path.splitext()` 可以直接让你得到**文件扩展名**，返回一个**元组**，这在很多时候非常方便：
+`os.path.splitext()` 可以直接让你得到文件扩展名，返回一个元组，这在很多时候非常方便：
 
 ```python
 >>> os.path.splitext('/path/to/file.txt')
@@ -2118,138 +2102,125 @@ with open('/Users/michael/test.txt', 'w') as f:
 
 ##### 3. 序列化
 
-我们把变量从内存中变成可存储或传输的过程称之为序列化，在Python中叫pickling，在其他语言中也被称之为serialization，marshalling，flattening等等，都是一个意思。 序列化之后，就可以把序列化后的内容写入磁盘，或者通过网络传输到别的机器上。 反过来，把变量内容从序列化的对象重新读到内存里称之为反序列化，即unpickling。
+把内存中的对象转换成一种可存储或可传输的格式（如字节流、字符串、JSON 等）的过程，称之为序列化。
 
-Python提供了 `pickle` 模块来实现序列化： 
+序列化主要解决三个问题：
 
-- `pickle.dumps()` 方法把任意obj序列化成一个bytes。
+1. 数据持久化，把对象保存到文件或数据库中；
+2. 网络传输，在进程间、服务器之间传递对象；
+3. 跨语言/跨平台交互，例如 JSON、Protocol Buffers。
+
+Python中常见的序列化方式：
+
+第一，`pickle` —— Python原生序列化。 
+
+- 将Python对象序列化为二进制字节串
+
+- 只能用于Python ↔ Python
+
+- 不安全（不要反序列化不可信数据）
 
 ```python
 import pickle
 
-data = {"name": "Alice", "age": 25, "scores": [95, 88, 76]}
-serialized = pickle.dumps(data)
-print(serialized)
-```
+data = {"name": "Alice", "age": 20}
 
-- 或者用另一个方法 `pickle.dump()` 直接把对象序列化后写入文件：
-
-```python
+# 序列化（写入文件）
 with open("data.pkl", "wb") as f:
-	pickle.dump(data, f)
-```
+    pickle.dump(data, f)
 
-- 反序列化，可以使用`pickle.load()` 方法从文件中读取对象：
-
-```python
-import pickle
-
+# 反序列化（读取文件）
 with open("data.pkl", "rb") as f:
-    loaded_data = pickle.load(f)
-print(loaded_data)
+    new_data = pickle.load(f)
+
+print(new_data)
 ```
 
-- 也可以通过`pickle.loads(bytes_obj)` 方法从字节串恢复到对象：
+第二，`json` —— 最常用的通用序列化方式。
+
+- 序列化为JSON 字符串
+
+- 可跨语言
+
+- 仅支持基本数据类型（dict, list, str, int, float, bool, None）
+
+JSON表示的对象就是标准的JavaScript语言的对象，JSON和Python内置的数据类型对应如下：
+
+| JSON类型   | Python类型 |
+| ---------- | ---------- |
+| {}         | dict       |
+| []         | list       |
+| "abc"      | str        |
+| 1234.56    | int或float |
+| true/false | True/False |
+| null       | None       |
 
 ```python
-restored = pickle.loads(serialized)
-print(restored)
+import json
+
+data = {"name": "Alice", "age": 20}
+
+# 序列化为字符串
+json_str = json.dumps(data)
+
+# 反序列化
+new_data = json.loads(json_str)
+
+# 文件操作
+with open("data.json", "w", encoding="utf-8") as f:
+    json.dump(data, f)
+
+with open("data.json", "r", encoding="utf-8") as f:
+    data = json.load(f)
 ```
 
-Pickle只能用于Python，并且可能不同版本的Python彼此都不兼容。如果我们要在不同的编程语言之间传递对象，就必须把对象序列化为标准格式，比如XML，但更好的方法是序列化为JSON，因为JSON表示出来就是一个字符串，可以被所有语言读取，也可以方便地存储到磁盘或者通过网络传输。JSON不仅是标准格式，并且比XML更快，而且可以直接在Web页面中读取，非常方便。
-
-Python内置的 `json` 模块提供了非常完善的从 **对象** 到 **JSON** 的转换：
-
-```python
->>> import json
->>> data = {'name':'Bob', 'age':20, 'score':88}
->>> json.dumps(data)
-'{"age": 20, "score": 88, "name": "Bob"}'
-```
-
-- json模块的 ` dumps()` 方法返回一个 `str` ，内容就是标准的JSON。
-
-值得一提的是，对中文进行JSON序列化时， `json.dumps()` 提供了一个 `ensure_ascii` 参数：
+值得一提的是，对中文进行JSON序列化时， `json.dumps()` 提供了一个 `ensure_ascii` 参数，默认为True。因此，所有非ASCII字符（例如中文、表情符号等）都会被转义成 `\uXXXX` 的形式。如果你想让JSON中显示真正的中文，而不是Unicode转义，就可以设置：
 
 ```python
 import json
 
 obj = dict(name='小明', age=20)
-s = json.dumps(obj, ensure_ascii=True)
+s = json.dumps(obj, ensure_ascii=False)
 print(s)
 ```
 
-`json.dumps()` 默认假设所有字符串都要用 **ASCII 编码**。 因此，所有非 ASCII 字符（例如中文、表情符号等）都会被 **转义** 成 `\uXXXX` 的形式。如果你想让JSON中显示真正的中文，而不是Unicode转义，就可以设置：
+第三，自定义对象的 JSON 序列化。
+
+Python的 `dict` 对象可以直接序列化为JSON的`{}`，不过，很多时候，我们更喜欢用 `class` 表示对象，比如定义`Student`类，然后序列化。但是，对象不是一个可序列化为JSON的对象，需要我们去做处理。
+
+方法一：转成字典
 
 ```python
-json.dumps(obj, ensure_ascii=False)
+class User:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+u = User("Alice", 20)
+json_str = json.dumps(u.__dict__)
 ```
 
-- json模块的 `dump()` 方法可以直接把 JSON写入一个 `file-like Object` 。
+方法二：自定义编码器
 
 ```python
->>> import json
->>> data = {'name':'Bob', 'age':20, 'score':88}
->>> with open('data.json','w') as f:
-... ... json.dump(data,f)
-... 
-```
+class User:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
 
-反过来，要把JSON反序列化为Python对象，用 `loads()` 或者对应的 `load()` 方法，前者把JSON的字符串反序列化，后者从 `file-like Object` 中读取字符串并反序列化：
-
-```python
->>> json_str = '{"age": 20, "score": 88, "name": "Bob"}'
->>> json.loads(json_str)
-{'age': 20, 'score': 88, 'name': 'Bob'}
->>> with open("data.json", "r") as f:
-... ... json.load(f)
-... 
-{'age': 20, 'score': 88, 'name': 'Bob'}
-```
-
-Python的 `dict` 对象可以直接序列化为JSON格式，不过，很多时候，我们更喜欢用 `class` 表示对象，比如定义 `Student` 类，然后序列化：
-
-```python
-import json
-
-class Student(object):
-	def __init__(self, name, age, score):
-		self.name = name
- 		self.age = age
- 		self.score = score
-
-stu = Student('Bob', 20, 88)
-
-# 方法一：手动转为 dict，最简单、最常用的方法。
-stu_dict = {"name": stu.name, "age": stu.age, "score": stu.score}
-json_str = json.dumps(stu_dict)
-print(json_str)
-
-# 方法二：使用 __dict__ 自动转成字典，Python对象内部都有一个 __dict__ 属性，用于存储实例变量。
-json_str = json.dumps(stu.__dict__)
-print(json_str)
-
-# 方法三：使用 default 参数
-def student2dict(s):
-	return {'name': s.name,'age': s.age,'score': s.score}
-json_str = json.dumps(stu, default=student2dict)
-print(json_str)
-```
-
-同样的道理，如果我们要把JSON反序列化为一个 `Student` 对象实例， `loads()` 方法首先转换出一个 `dict` 对象，然后，我们传入的 `object_hook` 函数负责把 `dict` 转换为 `Student` 实例：
-
-```python
->>> def dict2student(d):
-... ... return Student(d['name'], d['age'], d['score'])
-...
->>> json_str = '{"age": 20, "score": 88, "name": "Bob"}'
->>> print(json.loads(json_str, object_hook=dict2student))
-<__main__.Student object at 0x10cd3c190>
+def user2dict(u):
+    return {
+        'name': std.name,
+        'age': std.age,
+    }
+   
+u = User("Alice", 20)
+json.dumps(u, default=user2dict)
 ```
 
 【小结】
 
-Python语言特定的序列化模块是 `pickle` ，但如果要把序列化搞得更通用、更符合Web标准， 就可以使用 `json` 模块。 `json` 模块的 `dumps()` 和 `loads()` 函数是定义得非常好的接口的典范。当我们使用时，只需要传入一个必须的参数。但是，当默认的序列化或反序列机制不满足我们的要求时，我们又可以传入更多的参数来定制序列化或反序列化的规则，既做到了接口简单易用，又做到了充分的扩展性和灵活性。
+Python语言特定的序列化模块是 `pickle` ，但如果要把序列化搞得更通用、更符合Web标准， 就可以使用 `json` 模块。`json` 模块的 `dumps()` 和 `loads()` 函数是定义得非常好的接口的典范。当我们使用时，只需要传入一个必须的参数。但是，当默认的序列化或反序列机制不满足我们的要求时，我们又可以传入更多的参数来定制序列化或反序列化的规则，既做到了接口简单易用，又做到了充分的扩展性和灵活性。
 
 ### 进程和线程
 
