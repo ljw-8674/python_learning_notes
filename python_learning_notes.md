@@ -2144,17 +2144,6 @@ print(new_data)
 
 - 仅支持基本数据类型（dict, list, str, int, float, bool, None）
 
-JSON表示的对象就是标准的JavaScript语言的对象，JSON和Python内置的数据类型对应如下：
-
-| JSON类型   | Python类型 |
-| ---------- | ---------- |
-| {}         | dict       |
-| []         | list       |
-| "abc"      | str        |
-| 1234.56    | int或float |
-| true/false | True/False |
-| null       | None       |
-
 ```python
 import json
 
@@ -2163,7 +2152,7 @@ data = {"name": "Alice", "age": 20}
 # 序列化为字符串
 json_str = json.dumps(data)
 
-# 反序列化
+# 反序列化为字典
 new_data = json.loads(json_str)
 
 # 文件操作
@@ -2173,6 +2162,11 @@ with open("data.json", "w", encoding="utf-8") as f:
 with open("data.json", "r", encoding="utf-8") as f:
     data = json.load(f)
 ```
+
+从上面的例子可以看出：
+
+- `.dump()` 用于将对象序列化并直接写入文件对象；
+- `.dumps()` 用于将对象序列化为字符串（或字节）并返回。
 
 值得一提的是，对中文进行JSON序列化时， `json.dumps()` 提供了一个 `ensure_ascii` 参数，默认为True。因此，所有非ASCII字符（例如中文、表情符号等）都会被转义成 `\uXXXX` 的形式。如果你想让JSON中显示真正的中文，而不是Unicode转义，就可以设置：
 
