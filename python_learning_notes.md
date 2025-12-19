@@ -1066,7 +1066,7 @@ def greet(fn):
     return wrapper
 ```
 
-其次，装饰器要能接收任意参数。使用 `*args` 和 `**kwargs` 的参数，这样装饰器可用于任何函数。
+其次，装饰器要能接收任意参数。使用 `*args` 和 `kwargs` 的参数，这样装饰器可用于任何函数。
 
 另外，装饰器本身要接收参数时，需要多套一层函数。
 
@@ -2216,63 +2216,88 @@ json.dumps(u, default=user2dict)
 
 Python语言特定的序列化模块是 `pickle` ，但如果要把序列化搞得更通用、更符合Web标准， 就可以使用 `json` 模块。`json` 模块的 `dumps()` 和 `loads()` 函数是定义得非常好的接口的典范。当我们使用时，只需要传入一个必须的参数。但是，当默认的序列化或反序列机制不满足我们的要求时，我们又可以传入更多的参数来定制序列化或反序列化的规则，既做到了接口简单易用，又做到了充分的扩展性和灵活性。
 
-### 进程和线程
+### 九、进程和线程
 
 ##### 1. 多进程
 
-Unix/Linux操作系统提供了一个 `fork()` 系统调用，它非常特殊。普通的函数调用，调用一次， 返回一次，但是 `fork()` 调用一次，返回两次，因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后，分别在父进程和子进程内返回。 子进程永远返回 0 ，而父进程返回子进程的ID。这样做的理由是，一个父进程可以fork出很多子进程，所以，父进程要记下每个子进程的ID，而子进程只需要调用 `getppid()` 就可以拿到父进程的ID。
+要让Python程序实现多进程（multiprocessing），我们先了解操作系统的相关知识。
 
-有了 `fork` 调用，一个进程在接到新任务时就可以复制出一个子进程来处理新任务，常见的Apache服务器就是由父进程监听端口，每当有新的http请求时，就 `fork` 出子进程来处理新的http请求。
+Unix/Linux操作系统提供了一个 `fork()` 系统调用，它非常特殊。普通的函数调用，调用一次， 返回一次，但是 `fork()` 调用一次，返回两次，因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后，分别在父进程和子进程内返回。
 
-Windows系统没有fork调用，但是，Python提供了 **multiprocessing模块** 用于多进程并发编程，一个 `Process` 类来代表一个进程对象，下面的例子演示了启动 一个子进程并等待其结束：
+子进程永远返回0，而父进程返回子进程的ID。这样做的理由是，一个父进程可以fork出很多子进程，所以，父进程要记下每个子进程的ID，而子进程只需要调用 `getppid()` 就可以拿到父进程的ID。
+
+Python的 `os` 模块封装了常见的系统调用，其中就包括 `fork`，可以在Python程序中轻松创建子进程：
+
+```python
+import os
+import sys
+
+pid = os.fork()	
+if pid == 0:
+    print(f'I am child process ({os.getpid()}) and my parent is ({os.getppid()}).')
+else:
+    print(f'I ({os.getpid()}) just created a child process ({pid}).')
+```
+
+运行结果为：
+
+```python
+I (3) just created a child process (4).
+I am child process (4) and my parent is (3).
+```
+
+注意，由于Windows没有 `fork` 调用，上面的代码在Windows上无法运行。
+
+虽然Windows系统没有fork调用，但是由于Python是跨平台的，自然也应该提供一个跨平台的多进程支持，而 `multiprocessing` 模块就是跨平台版本的多进程模块。
+
+`multiprocessing` 是Python标准库中用于多进程并行的模块，能够绕过GIL，充分利用多核CPU。其中最常用、也最核心的就是 `Process` 和 `Pool`。
 
 ```python
 from multiprocessing import Process
 import os
 
-# 子进程要执行的代码
 def run_proc(name):
-	print('Run child process %s (%s)...' % (name, os.getpid()))
+	print(f'Run child process {name} ({os.getpid()})...')
 
-if __name__=='__main__':
-    print('Parent process %s.' % os.getpid())
- 	p = Process(target=run_proc, args=('test',))
- 	print('Child process will start.')
- 	p.start()
- 	p.join()
- 	print('Child process end.')
+if __name__ == '__main__':	# Windows中必须写，防止无限创建进程
+	print(f'Parent process ({os.getpid()}).')
+	p = Process(target=run_proc, args=('test',))
+	print('Child process will start.')
+	p.start()
+	p.join()
+	print('Child process end.')
 ```
 
 运行结果如下：
 
-```python
-Parent process 936.
+```bash
+D:\PythonProject\python_learning_notes>python exercise23_MultiProcess.py
+Parent process (11228).
 Child process will start.
-Run child process test (937)...
+Running child process (9756) ...
 Child process end.
 ```
 
-- 创建子进程时，只需要传入一个执行函数和函数的参数，创建一个 `Process` 实例，用 `start()` 方法启动。
--  `join()` 方法可以等待子进程结束后再继续往下运行，通常用于进程间的同步。
+创建子进程时，只需要传入一个执行函数和函数的参数，创建一个 `Process` 实例，用 `start()` 方法启动。 `join()` 方法可以等待子进程结束后再继续往下运行，通常用于进程间的同步。
 
-如果要启动大量的子进程，可以用 **进程池** 的方式批量创建子进程：
+如果要启动大量的子进程，可以用进程池的方式批量创建子进程：
 
 ```python
 from multiprocessing import Pool
 import os, time, random
 
 def long_time_task(name):
-    print('Run task %s (%s)...' % (name, os.getpid()))
+    print(f'Run task {name} ({os.getpid()})...')
     start = time.time()
     time.sleep(random.random() * 3)
     end = time.time()
-    print('Task %s runs %0.2f seconds.' % (name, (end - start)))
+    print(f'Task {name} runs {end - start:.2f} seconds.')
 
 if __name__=='__main__':
-    print('Parent process %s.' % os.getpid())
-    p = Pool(4)
+    print(f'Parent process {os.getpid()}.')
+    p = Pool()
     for i in range(5):
-        p.apply_async(long_time_task, args=(i+1,))
+        p.apply_async(long_time_task, args=(i + 1,))
     print('Waiting for all subprocesses done...')
     p.close()
     p.join()
@@ -2281,29 +2306,28 @@ if __name__=='__main__':
 
 运行结果如下：
 
-```python
-Parent process 3.
-Run task 3 (5)...
-Task 3 runs 0.46 seconds.
-Run task 1 (4)...
-Task 1 runs 0.49 seconds.
-Run task 2 (6)...
-Task 2 runs 0.20 seconds.
-Run task 5 (6)...
-Task 5 runs 2.27 seconds.
-Run task 4 (7)...
-Task 4 runs 0.30 seconds.
+```bash
+D:\PythonProject\python_learning_notes>python exercise23_MultiProcess.py
+Parent process 6664.
 Waiting for all subprocesses done...
+Run task 1 (10456)...
+Run task 2 (12412)...
+Run task 3 (12068)...
+Run task 4 (652)...
+Task 3 runs 1.27 seconds.
+Run task 5 (12068)...
+Task 2 runs 1.68 seconds.
+Task 1 runs 1.74 seconds.
+Task 4 runs 2.57 seconds.
+Task 5 runs 2.72 seconds.
 All subprocesses done.
 ```
 
-对 `Pool` 对象调用 `join()` 方法会等待所有子进程执行完毕，调用 `join()` 之前必须先调用 `close()` ，调用 `close()` 之后就不能继续添加新的 `Process` 了。 
+对 `Pool` 对象调用 `join()` 方法会等待所有子进程执行完毕，而调用 `join()` 之前必须先调用 `close()` ，以确保不能继续添加新的 `Process` 。 
 
-请注意输出的结果，task `1` ， `2` ， `3` ， `4` 是立刻执行的，而task `5` 要等待前面某个task完成后才执行，这是因为 `Pool` 的默认大小在我的电脑上是4，因此，最多同时执行4个进程。这是 `Pool` 有意设计的限制，并不是操作系统的限制。如果改成：`p = Pool(5)` ，就可以同时跑5个进程。
+请注意输出的结果，task 1，2，3，4是立刻执行的，而task 5要等待前面某个task完成后才执行，这是因为 `Pool` 的默认大小为CPU 核心数，这里我的电脑为4，因此，最多同时执行4个进程。
 
-由于 `Pool` 的默认大小是CPU的核数，如果你拥有8核CPU，你要提交至少9个子进程才能看到上面的等待效果。
-
-Process 之间肯定是需要通信的，操作系统提供了很多机制来实现 **进程间的通信（IPC）** 。Python的 `multiprocessing` 模块包装了底层的机制，提供了 `Queue` 、 `Pipes` 等多种方式来交换数据。 我们以 `Queue` 为例，在父进程中创建两个子进程，一个往 `Queue` 里写数据，一个从 `Queue` 里读数据：
+在 `multiprocessing` 中，进程之间的通信（IPC，Inter-Process Communication）是一个核心问题。因为进程之间内存不共享，所以必须借助专门的机制来传递数据、同步状态。Python的 `multiprocessing` 模块包装了底层的机制，提供了 `Queue` 、 `Pipes` 等多种方式来交换数据。以 `Queue` 为例，在父进程中创建两个子进程，一个往 `Queue` 里写数据，一个从 `Queue` 里读数据：
 
 ```python
 from multiprocessing import Process, Queue
@@ -2324,27 +2348,32 @@ def read(q):
         value = q.get(True)
         print('Get %s from queue.' % value)
 
-if __name__ == '__main__':
+if __name__=='__main__':
     # 父进程创建Queue，并传给各个子进程：
     q = Queue()
     pw = Process(target=write, args=(q,))
     pr = Process(target=read, args=(q,))
+    
     # 启动子进程pw，写入:
     pw.start()
+    
     # 启动子进程pr，读取:
     pr.start()
+    
     # 等待pw结束:
     pw.join()
+    
     # pr进程里是死循环，无法等待其结束，只能强行终止:
     pr.terminate()
 ```
 
 运行结果为：
 
-```python
-Process to write: 12756
+```bash
+D:\PythonProject\general>python tmp_code.py
+Process to write: 11804
 Put A to queue...
-Process to read: 4564
+Process to read: 2036
 Get A from queue.
 Put B to queue...
 Get B from queue.
@@ -2352,9 +2381,15 @@ Put C to queue...
 Get C from queue.
 ```
 
+在Unix/Linux下，`multiprocessing` 模块封装了 `fork()` 调用，使我们不需要关注 `fork()` 的细节。由于Windows没有 `fork` 调用，因此，`multiprocessing` 需要模拟出 `fork` 的效果，父进程所有Python对象都必须通过pickle序列化再传到子进程去，所以，如果 `multiprocessing` 在Windows下调用失败了，要先考虑是不是pickle失败了。
+
 【小结】
 
-在Unix/Linux下，可以使用 `fork()` 调用实现多进程。 要实现跨平台的多进程，可以使用 `multiprocessing` 模块。 进程间通信是通过 `Queue` 、 `Pipes` 等实现的。
+在Unix/Linux下，可以使用 `fork()` 调用实现多进程。 
+
+要实现跨平台的多进程，可以使用 `multiprocessing` 模块。 
+
+进程间通信是通过 `Queue` 、 `Pipes` 等实现的。
 
 ##### 2. 多线程
 
