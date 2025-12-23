@@ -2248,7 +2248,7 @@ Python 中正则主要通过 `re` 模块来使用。
 
 1. `re.search()` —— 查找是否存在
 
-在字符串中查找第一个匹配，找到返回Match对象，否则返回 `None`。
+在字符串中查找第一个匹配的内容，找到返回Match对象，否则返回 `None`。
 
 ```python
 import re
@@ -2256,22 +2256,21 @@ import re
 text = "My phone number is 13812345678 and 13800000001"
 
 result = re.search(r"\d{11}", text)
-print(type(result))    # <class 're.Match'>
 if result:
     print(result.group())    # 13812345678
 ```
 
 2. `re.findall()` —— 找出所有匹配
 
-返回所有匹配结果的列表。
+找出字符串中所有符合正则表达式的内容，并以列表形式返回
 
 ```python
 import re
 
-text = "原价998元，优惠后888元"
+text = "原价998元，圣诞节折扣888元，元旦节折扣778元"
 
 numbers = re.findall(r"\d+", text)
-print(numbers)  # ['998', '888']
+print(numbers)  # ['998', '888', '778']
 ```
 
 3. `re.match()` —— 从字符串开头匹配
@@ -2336,26 +2335,65 @@ import re
 text = "生日：1998-08-23"
 m = re.search(r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})", text)
 
-print(m.group("year"))    # 1998
+print(m.group("year"))    # 可通过名称访问,提高可读性
+print(m.groupdict())    # {'year': '1998', 'month': '08', 'day': '23'}
 ```
 
 3. 非捕获分组
 
 捕获分组要存内容，而非捕获分组只做结构匹配，这在复杂或大量匹配中有意义。
 
+```python
+import re
 
+print(re.findall(r'ab',  'ababab'))    # group(0)
+print(re.findall(r'(a)(b)', 'ababab'))    # group(1)
+print(re.findall(r'(?:a)(?:b)', 'ababab'))    # group(0)
+```
 
+### 5. 贪婪匹配
 
+需要特别指出的是，正则匹配默认是贪婪匹配，也就是匹配尽可能多的字符。如下例：
 
+```python
+import re
 
+m = re.match(r'^(\d+)(0*)$', '102300')
+print(m.groups())    # ('102300', '')
+```
 
+由于 `\d+` 采用贪婪匹配，直接把后面的 `0` 全部匹配了，结果 `0*` 只能匹配空字符串了。
 
+必须让 `\d+` 采用非贪婪匹配（也就是尽可能少匹配），才能把后面的 `0` 匹配出来：
 
+```python
+import re
 
+m = re.match(r'^(\d+?)(0*)$', '102300')
+print(m.groups())    # ('1023', '00')
+```
 
+### 6. 编译
 
+当我们在Python中使用正则表达式时，re模块内部会干两件事情：
 
+1. 编译正则表达式，如果正则表达式的字符串本身不合法，会报错；
+2. 用编译后的正则表达式去匹配字符串。
 
+如果一个正则表达式要重复使用几千次，出于效率的考虑，我们可以预编译该正则表达式，接下来重复使用时就不需要编译这个步骤了，直接匹配：
+
+```python
+import re
+
+# 编译:
+re_telephone = re.compile(r'^(\d{3})-(\d{3,8})$')    
+
+# 使用：
+print(re_telephone.match('010-12345').groups())    # ('010', '12345')
+print(re_telephone.match('010-8086').groups())    # ('010', '8086')
+```
+
+编译后生成Regular Expression对象，由于该对象自己包含了正则表达式，所以调用对应的方法时不用给出正则字符串。
 
 
 
