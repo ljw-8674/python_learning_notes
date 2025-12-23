@@ -1,10 +1,10 @@
-### 一、Python基础
+## 一、Python基础
 
-##### 1. 缩进
+### 1. 缩进
 
 Python使用缩进来组织代码块，请务必遵守约定俗成的习惯，坚持使用4个空格的缩进；在文本编辑器中，需要设置把Tab自动转换为4个空格，确保不混用Tab和空格。
 
-##### 2. 数据类型和变量
+### 2. 数据类型和变量
 
 Python 能直接处理的主要数据类型有：数值型、布尔型、字符串、列表、元组、字典、集合、空值。
 
@@ -21,7 +21,7 @@ print(a)
 
 这种变量本身类型不固定的语言称之为动态语言，与之对应的是静态语言。静态语言在定义变量时必须指定变量类型，如果赋值的时候类型不匹配，就会报错。例如Java是静态语言
 
-##### 3. 字符串和编码
+### 3. 字符串和编码
 
 最早只有127个字符被编码到计算机里，也就是大小写英文字母、数字和一些符号，这个编码表被称为ASCII编码，比如：大写字母A的编码是65，小写字母z的编码是122。
 
@@ -96,7 +96,7 @@ UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordin
 
 可见，1个中文字符经过UTF-8编码后通常会占用3个字节，而1个英文字符只占用1个字节。在操作字符串时，我们经常遇到str和bytes的互相转换，为了避免乱码问题，应当始终坚持使用UTF-8编码进行转换。
 
-##### 4. 使用list和tuple
+### 4. 使用list和tuple
 
 列表（list）是一种有序的集合，可以随时添加和删除其中的元素。
 
@@ -165,7 +165,7 @@ tuple所谓的“不变”是说，tuple的每个元素，指向永远不变。�
 ('a', 'b', ['X', 'Y'])
 ```
 
-##### 5. 条件判断
+### 5. 条件判断
 
 - if语句
 - if-else语句
@@ -192,7 +192,7 @@ if x:
 
 只要x是非零数值、非空字符串、非空list等，就判断为True，否则为False。
 
-##### 6. 模式匹配
+### 6. 模式匹配
 
 当我们用 `if ... elif ... elif ... else ...` 判断时，会写很长一串代码，可读性较差。 如果要针对某个变量匹配若干种情况，可以使用match语句:
 
@@ -258,7 +258,7 @@ match args:
 
 可见，match语句的匹配规则非常灵活，可以写出非常简洁的代码。
 
-##### 7. 循环
+### 7. 循环
 
 - Python的循环有两种，一种是for循环，例如计算1~100的整数之和：
 
@@ -290,7 +290,7 @@ while 循环适用于：循环次数不确定、依赖运行时条件结束的�
 
 在循环中， `break` 语句可以提前退出循环，适用于找到目标、用户输入退出等场景。 `continue` 语句则可以跳过当前的这次循环，直接开始下一次循环，适用于跳过某些不符合条件的元素。这两个语句通常都配合if语句使用。
 
-##### 8. 使用dict和set
+### 8. 使用dict和set
 
 用Python写一个字典（dict）如下：
 
@@ -416,9 +416,9 @@ set可以看成数学意义上的无序和无重复元素的集合，因此，�
 'abc
 ```
 
-### 二、函数
+## 二、函数
 
-##### 1. 调用函数
+### 1. 调用函数
 
 要调用一个函数，需要知道函数的名称和参数。
 
@@ -440,7 +440,7 @@ Traceback (most recent call last):
 TypeError: bad operand type for abs(): 'str'
 ```
 
-##### 2. 定义函数
+### 2. 定义函数
 
 定义函数时，需要确定函数名和参数个数，如下例：
 
@@ -520,14 +520,14 @@ r = move(100, 100, 60, math.pi / 6)
 print(r)	# (151.96152422706632, 70.0)
 ```
 
-##### 3. 函数的参数
+### 3. 函数的参数
 
 - 位置参数。最常见的参数，按顺序传递。
 - 默认参数。在定义函数时给参数设置默认值，调用时可省略。默认参数放在必选参数后面。默认参数必须指向不可变对象！
 - 可变位置参数。用*收集任意个位置参数，传入函数时会打包成tuple。 
 - 可变关键字参数。用**收集任意个关键字参数，传入函数时会打包成dict。
 
-##### 4. 递归函数
+### 4. 递归函数
 
 在函数内部，可以调用其他函数。如果一个函数在内部调用自身本身，这个函数就是递归函数。例如：
 
@@ -555,11 +555,11 @@ def fact(n):
 
 递归函数的优点是定义简单，逻辑清晰。理论上，所有的递归函数都可以写成循环的方式，但循环的逻辑不如递归清晰。
 
-### 三、高级特性
+## 三、高级特性
 
 在Python中，代码不是越多越好，而是越少越好。代码不是越复杂越好，而是越简单越好。基于这一思想，我们来介绍Python中非常有用的高级特性，1行代码能实现的功能，决不写5行代码。请始终牢记，代码越少，开发效率越高。
 
-##### 1. 切片
+### 1. 切片
 
 在很多编程语言中，针对字符串提供了很多各种截取函数（例如，substring），其实目的就是对字符串切片。Python没有针对字符串的截取函数，只需要切片一个操作就可以完成，非常简单。基本语法是：
 
@@ -579,7 +579,7 @@ sequence[start:stop:step]
 - 支持负索引。
 - 灵活性很高，常用于反转、跳步取值、截取子串。
 
-##### 2. 迭代
+### 2. 迭代
 
 通过for循环来依次访问可迭代对象里的元素，直到结束，这种遍历我们称为迭代。例如：
 
@@ -630,7 +630,7 @@ Python内置的 `enumerate` 函数可以把一个list变成”索引-元素“�
 - 节省内存：像生成器那样惰性迭代。
 - 统一接口：不同类型（list、tuple、set）都可以用同样的for遍历。
 
-##### 3. 列表推导式
+### 3. 列表推导式
 
 作用：用一行语句快速创建列表。
 
@@ -681,7 +681,7 @@ for前面的if必须加上else，因为这里是一个表达式，它必须根�
 [-1, 2, -3, 4, -5, 6, -7, 8, -9, 10]
 ```
 
-##### 4. 生成器
+### 4. 生成器
 
 通过列表生成式，我们可以直接创建一个列表。但是，受到内存限制，列表容量肯定是有限的。而且，创建一个包含100万个元素的列表，不仅占用很大的存储空间，如果我们仅仅需要访问前面几个元素，那后面绝大多数元素占用的空间都白白浪费了。
 
@@ -828,7 +828,7 @@ g: 5
 Generator return value: done
 ```
 
-##### 5. 迭代器
+### 5. 迭代器
 
 首先，可以直接作用于for循环的对象统称为可迭代对象（Iterable）。 可以使用 `isinstance()` 判断一个对象是否是可迭代对象：
 
@@ -877,9 +877,9 @@ True
 
 Iterator甚至可以表示一个无限大的数据流，例如全体自然数。而使用list是永远不可能存储全体自然数的。
 
-### 四、函数式编程
+## 四、函数式编程
 
-##### 1. 高阶函数
+### 1. 高阶函数
 
 变量可以指向函数，函数名本身也是变量。
 
@@ -981,7 +981,7 @@ print(sorted(['bob', 'about', 'Zoo', 'Credit'], key=str.lower, reverse=True))
 # ['Zoo', 'Credit', 'bob', 'about']
 ```
 
-##### 2. 返回函数
+### 2. 返回函数
 
 高阶函数除了可以接受函数作为参数外，还可以把函数作为结果值返回。
 
@@ -1034,7 +1034,7 @@ def hello():
 hello()
 ```
 
-##### 3. 装饰器
+### 3. 装饰器
 
 装饰器（decorator）是一个“包装”函数的函数，用来在不修改原函数代码的前提下，为函数添加额外功能，相当于是给函数套了一层外壳。
 
@@ -1135,11 +1135,11 @@ finally:
 
 `with` 就是try/finally的语法糖。
 
-### 五、面向对象编程
+## 五、面向对象编程
 
 面向对象编程——Object Oriented Programming，简称OOP，是一种程序设计思想。OOP把对象作为程序的基本单元，一个对象包含了数据和操作数据的函数。
 
-##### 1. 类和实例
+### 1. 类和实例
 
 面向对象最重要的概念就是类（Class）和实例（Instance），注意如下特点：
 
@@ -1163,7 +1163,7 @@ Traceback (most recent call last):
 AttributeError: 'Student' object has no attribute 'age'
 ```
 
-##### 2. 访问限制
+### 2. 访问限制
 
 值得一提的是，面向对象编程的一个重要特点就是数据封装。如果要让内部属性不被外部访问，可以把属性的名称前加上两个下划线 __ ，在Python中，实例的变量名如果以 __ 开头，就变成了一个私有变量（private），只有内部可以访问，外部不能访问。
 
@@ -1211,7 +1211,7 @@ class Student(object):
             raise ValueError('bad score')
 ```
 
-##### 3. 继承和多态
+### 3. 继承和多态
 
 在OOP程序设计中，当我们定义一个class的时候，可以从某个现有的class继承，新的class称为子类（Subclass），而被继承的class称为基类、父类或超类（Base class、Super class）。
 
@@ -1221,7 +1221,7 @@ class Student(object):
 
 对于一个变量，我们只需要知道它的父类，无需确切地知道它的子类，就可以放心地调用父类中方法，而具体调用的方法是作用在父类是子类对象上，由运行时该对象的确切类型决定。这就是多态真正的威力：调用方只管调用，不管细节，而当我们新增一种子类时，只要确保其方法编写正确，不用管原来的代码是如何调用的。
 
-##### 4. 获取对象信息
+### 4. 获取对象信息
 
 - 使用 `Type()` 函数
 
@@ -1296,7 +1296,7 @@ True
 3
 ```
 
-##### 5. 实例属性和类属性
+### 5. 实例属性和类属性
 
 由于Python是动态语言，由类创建的示例可以任意绑定属性。
 
@@ -1336,11 +1336,11 @@ Student
 
 不要对实例属性和类属性使用相同的名字，否则将产生难以发现的错误。
 
-### 六、面向对象高级编程
+## 六、面向对象高级编程
 
 数据封装、继承和多态只是面向对象程序设计中最基础的3个概念。在Python中，面向对象还有很多高级特性，允许我们写出非常强大的功能。
 
-##### 1. 使用 `__slots__`
+### 1. 使用 `__slots__`
 
 `__slots__` 是 Python 中类的一个高级特性，用于限制实例能绑定的属性，并且提供内存优化和性能提升的能力。
 
@@ -1364,7 +1364,7 @@ p.address = 'Beijing'  # ❌ AttributeError：不能添加新属性
 
 值得一提的是，父类使用 `__slots__` 时，子类不会继承，必须重新声明。
 
-##### 2. 使用 `@property`
+### 2. 使用 `@property`
 
 在给实例绑定属性的时候，如果我们直接把属性暴露出去，虽然写起来很简单，但是，没办法检查参数，导致可以把成绩随意修改。
 
@@ -1424,7 +1424,7 @@ print(s.age)     # 20
 s.age = 30       # ❌ 不能设置
 ```
 
-##### 3. Mixin
+### 3. Mixin
 
 首先，Mixin（混入类）是一种“只提供功能，不单独使用”的类。
 
@@ -1459,7 +1459,7 @@ Mixin的规则是：
 
 Mixin是Python中最佳的可组合代码复用方案，常用于日志、序列化、权限、缓存等功能，通过多重继承让类“想要什么功能就混什么功能”。
 
-##### 4. 定制类
+### 4. 定制类
 
 通过实现特殊方法（以 `__xxx__` 命名的“魔术方法”）来自定义类的行为，让你的对象像内置类型一样使用。
 
@@ -1654,7 +1654,7 @@ False
 False
 ```
 
-##### 5. 使用枚举类
+### 5. 使用枚举类
 
 定义枚举类如下，这样我们就获得了一个枚举类Month，可以直接使用 `Month.Jan` 来引用一个常量，或者枚举它的所有成员：
 
@@ -1702,13 +1702,9 @@ class Weekday(Enum):
 
 其中，`@unique` 装饰器可以帮助我们检查保证没有重复值。
 
-##### 6. 使用元类
+## 七、错误、调试和测试
 
-Skip~
-
-### 七、错误、调试和测试
-
-##### 1. 错误处理
+### 1. 错误处理
 
 Python内置的 `try...except...` 用来捕获异常十分方便。出错时，会分析错误信息并定位错误发生的代码位置才是最关键的。 
 
@@ -1762,7 +1758,7 @@ except MyError as e:
     print("捕获到自定义异常：", e)
 ```
 
-##### 2. 调试
+### 2. 调试
 
 - print() 打印变量值
 - assert 断言
@@ -1819,7 +1815,7 @@ PyCharm：http://www.jetbrains.com/pycharm/
 
 写程序最痛苦的事情莫过于调试，程序往往会以你意想不到的流程来运行，你期待执行的语句其实根本没有执行，这时候，就需要调试了。 虽然用IDE调试起来比较方便，但是最后你会发现，logging才是终极武器。
 
-##### 3. 单元测试
+### 3. 单元测试
 
 单元测试是用来对一个模块、一个函数或者一个类来进行正确性检验的测试工作。 
 
@@ -1936,7 +1932,7 @@ class TestDict(unittest.TestCase):
 - 单元测试代码要非常简单，如果测试代码太复杂，那么测试代码本身就可能有bug。
 - 单元测试通过了并不意味着程序就没有bug了，但是不通过程序肯定有bug。
 
-##### 4. 文档测试
+### 4. 文档测试
 
 当我们编写注释时，如果写上这样的注释，无疑明确地告诉函数的调用者该函数的期望输入和输出：
 
@@ -1977,9 +1973,9 @@ if __name__ == '__main__':
 
 doctest不但可以用来测试，还可以直接作为示例代码。通过某些文档生成工具，就可以自动把包含doctest的注释提取出来。用户看文档的时候，同时也看到了doctest。
 
-### 八、IO编程
+## 八、IO编程
 
-##### 1. 文件读写
+### 1. 文件读写
 
 首先是读文件，可以使用Python内置的 `open()` 函数，传入文件路径和标示符：
 
@@ -2053,7 +2049,7 @@ b'\xff\xd8\xff\xe1\x00\x18Exif\x00\x00...' # 十六进制表示的字节
 
 需要说明的是，以 `'w'` 模式写入文件时，如果文件已存在，会直接覆盖。如果我们希望追加到文件末尾，可以传入 `'a'` 以追加模式写入。
 
-##### 2. 操作文件和目录
+### 2. 操作文件和目录
 
 操作文件和目录的函数一部分放在 `os` 模块中，一部分放在 `os.path` 模块中。查看、创建和删除目录如下：
 
@@ -2100,7 +2096,7 @@ b'\xff\xd8\xff\xe1\x00\x18Exif\x00\x00...' # 十六进制表示的字节
 ['xxx.py', ...]
 ```
 
-##### 3. 序列化
+### 3. 序列化
 
 把内存中的对象转换成一种可存储或可传输的格式（如字节流、字符串、JSON 等）的过程，称之为序列化。
 
@@ -2216,446 +2212,154 @@ json.dumps(u, default=user2dict)
 
 Python语言特定的序列化模块是 `pickle` ，但如果要把序列化搞得更通用、更符合Web标准， 就可以使用 `json` 模块。`json` 模块的 `dumps()` 和 `loads()` 函数是定义得非常好的接口的典范。当我们使用时，只需要传入一个必须的参数。但是，当默认的序列化或反序列机制不满足我们的要求时，我们又可以传入更多的参数来定制序列化或反序列化的规则，既做到了接口简单易用，又做到了充分的扩展性和灵活性。
 
-### 九、进程和线程
+## 九、正则表达式
 
-##### 1. 多进程
+### 1. 作用
 
-要让Python程序实现多进程（multiprocessing），我们先了解操作系统的相关知识。
+正则表达式是一种用来描述字符串模式的语言，常用于：
 
-Unix/Linux操作系统提供了一个 `fork()` 系统调用，它非常特殊。普通的函数调用，调用一次， 返回一次，但是 `fork()` 调用一次，返回两次，因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后，分别在父进程和子进程内返回。
+- 字符串匹配
+- 查找 / 提取文本
+- 替换文本
+- 校验格式（邮箱、手机号、身份证等）
 
-子进程永远返回0，而父进程返回子进程的ID。这样做的理由是，一个父进程可以fork出很多子进程，所以，父进程要记下每个子进程的ID，而子进程只需要调用 `getppid()` 就可以拿到父进程的ID。
+Python 中正则主要通过 `re` 模块来使用。
 
-Python的 `os` 模块封装了常见的系统调用，其中就包括 `fork`，可以在Python程序中轻松创建子进程：
+### 2. 语法
 
-```python
-import os
-import sys
+| 符号    | 含义               |
+| ------- | ------------------ |
+| `.`     | 任意字符（除换行） |
+| `\d`    | 数字               |
+| `\D`    | 非数字             |
+| `\w`    | 字母/数字/下划线   |
+| `\W`    | 非 `\w`            |
+| `\s`    | 空白字符           |
+| `\S`    | 非空白             |
+| `*`     | 0 次或多次         |
+| `+`     | 1 次或多次         |
+| `?`     | 0 或 1 次          |
+| `{n}`   | 恰好 n 次          |
+| `{n,m}` | n 到 m 次          |
+| `^`     | 字符串开头         |
+| `$`     | 字符串结尾         |
 
-pid = os.fork()	
-if pid == 0:
-    print(f'I am child process ({os.getpid()}) and my parent is ({os.getppid()}).')
-else:
-    print(f'I ({os.getpid()}) just created a child process ({pid}).')
-```
+### 3. 常用函数
 
-运行结果为：
+1. `re.search()` —— 查找是否存在
 
-```python
-I (3) just created a child process (4).
-I am child process (4) and my parent is (3).
-```
-
-注意，由于Windows没有 `fork` 调用，上面的代码在Windows上无法运行。
-
-虽然Windows系统没有fork调用，但是由于Python是跨平台的，自然也应该提供一个跨平台的多进程支持，而 `multiprocessing` 模块就是跨平台版本的多进程模块。
-
-`multiprocessing` 是Python标准库中用于多进程并行的模块，能够绕过GIL，充分利用多核CPU。其中最常用、也最核心的就是 `Process` 和 `Pool`。
-
-```python
-from multiprocessing import Process
-import os
-
-def run_proc(name):
-	print(f'Run child process {name} ({os.getpid()})...')
-
-if __name__ == '__main__':	# Windows中必须写，防止无限创建进程
-	print(f'Parent process ({os.getpid()}).')
-	p = Process(target=run_proc, args=('test',))
-	print('Child process will start.')
-	p.start()
-	p.join()
-	print('Child process end.')
-```
-
-运行结果如下：
-
-```bash
-D:\PythonProject\python_learning_notes>python exercise23_MultiProcess.py
-Parent process (11228).
-Child process will start.
-Running child process (9756) ...
-Child process end.
-```
-
-创建子进程时，只需要传入一个执行函数和函数的参数，创建一个 `Process` 实例，用 `start()` 方法启动。 `join()` 方法可以等待子进程结束后再继续往下运行，通常用于进程间的同步。
-
-如果要启动大量的子进程，可以用进程池的方式批量创建子进程：
+在字符串中查找第一个匹配，找到返回Match对象，否则返回 `None`。
 
 ```python
-from multiprocessing import Pool
-import os, time, random
+import re
 
-def long_time_task(name):
-    print(f'Run task {name} ({os.getpid()})...')
-    start = time.time()
-    time.sleep(random.random() * 3)
-    end = time.time()
-    print(f'Task {name} runs {end - start:.2f} seconds.')
+text = "My phone number is 13812345678 and 13800000001"
 
-if __name__=='__main__':
-    print(f'Parent process {os.getpid()}.')
-    p = Pool()
-    for i in range(5):
-        p.apply_async(long_time_task, args=(i + 1,))
-    print('Waiting for all subprocesses done...')
-    p.close()
-    p.join()
-    print('All subprocesses done.')
+result = re.search(r"\d{11}", text)
+print(type(result))    # <class 're.Match'>
+if result:
+    print(result.group())    # 13812345678
 ```
 
-运行结果如下：
+2. `re.findall()` —— 找出所有匹配
 
-```bash
-D:\PythonProject\python_learning_notes>python exercise23_MultiProcess.py
-Parent process 6664.
-Waiting for all subprocesses done...
-Run task 1 (10456)...
-Run task 2 (12412)...
-Run task 3 (12068)...
-Run task 4 (652)...
-Task 3 runs 1.27 seconds.
-Run task 5 (12068)...
-Task 2 runs 1.68 seconds.
-Task 1 runs 1.74 seconds.
-Task 4 runs 2.57 seconds.
-Task 5 runs 2.72 seconds.
-All subprocesses done.
-```
-
-对 `Pool` 对象调用 `join()` 方法会等待所有子进程执行完毕，而调用 `join()` 之前必须先调用 `close()` ，以确保不能继续添加新的 `Process` 。 
-
-请注意输出的结果，task 1，2，3，4是立刻执行的，而task 5要等待前面某个task完成后才执行，这是因为 `Pool` 的默认大小为CPU 核心数，这里我的电脑为4，因此，最多同时执行4个进程。
-
-在 `multiprocessing` 中，进程之间的通信（IPC，Inter-Process Communication）是一个核心问题。因为进程之间内存不共享，所以必须借助专门的机制来传递数据、同步状态。Python的 `multiprocessing` 模块包装了底层的机制，提供了 `Queue` 、 `Pipes` 等多种方式来交换数据。以 `Queue` 为例，在父进程中创建两个子进程，一个往 `Queue` 里写数据，一个从 `Queue` 里读数据：
+返回所有匹配结果的列表。
 
 ```python
-from multiprocessing import Process, Queue
-import os, time, random
+import re
 
-# 写数据进程执行的代码:
-def write(q):
-    print('Process to write: %s' % os.getpid())
-    for value in ['A', 'B', 'C']:
-        print('Put %s to queue...' % value)
-        q.put(value)
-        time.sleep(random.random())
+text = "原价998元，优惠后888元"
 
-# 读数据进程执行的代码:
-def read(q):
-    print('Process to read: %s' % os.getpid())
-    while True:
-        value = q.get(True)
-        print('Get %s from queue.' % value)
-
-if __name__=='__main__':
-    # 父进程创建Queue，并传给各个子进程：
-    q = Queue()
-    pw = Process(target=write, args=(q,))
-    pr = Process(target=read, args=(q,))
-    
-    # 启动子进程pw，写入:
-    pw.start()
-    
-    # 启动子进程pr，读取:
-    pr.start()
-    
-    # 等待pw结束:
-    pw.join()
-    
-    # pr进程里是死循环，无法等待其结束，只能强行终止:
-    pr.terminate()
+numbers = re.findall(r"\d+", text)
+print(numbers)  # ['998', '888']
 ```
 
-运行结果为：
+3. `re.match()` —— 从字符串开头匹配
 
-```bash
-D:\PythonProject\general>python tmp_code.py
-Process to write: 11804
-Put A to queue...
-Process to read: 2036
-Get A from queue.
-Put B to queue...
-Get B from queue.
-Put C to queue...
-Get C from queue.
-```
-
-在Unix/Linux下，`multiprocessing` 模块封装了 `fork()` 调用，使我们不需要关注 `fork()` 的细节。由于Windows没有 `fork` 调用，因此，`multiprocessing` 需要模拟出 `fork` 的效果，父进程所有Python对象都必须通过pickle序列化再传到子进程去，所以，如果 `multiprocessing` 在Windows下调用失败了，要先考虑是不是pickle失败了。
-
-【小结】
-
-在Unix/Linux下，可以使用 `fork()` 调用实现多进程。 
-
-要实现跨平台的多进程，可以使用 `multiprocessing` 模块。 
-
-进程间通信是通过 `Queue` 、 `Pipes` 等实现的。
-
-##### 2. 多线程
-
-我们前面提到了进程是由若干线程组成的，一个进程至少有一个线程。 由于线程是操作系统直接支持的执行单元，因此，高级语言通常都内置多线程的支持，Python也不例外，并且，Python的线程是真正的Posix Thread，而不是模拟出来的线程。 
-
-Python的标准库提供了两个模块： `_thread` 和 `threading` ， `_thread` 是低级模块， `threading` 是高级模块，对 `_thread` 进行了封装。绝大多数情况下，我们只需要使用 `threading` 这个高级模块。
-
-启动一个线程就是把一个函数传入并创建 `Thread` 实例，然后调用 `start()` 开始执行：
+只能从字符串开头开始匹配。
 
 ```python
-import time, threading
+import re
 
-# 新线程执行的代码:
-def loop():
-    print('thread %s is running...' % threading.current_thread().name)
-    n = 0
-    while n < 5:
-        n = n + 1
-        print('thread %s >>> %s' % (threading.current_thread().name, n))
-        time.sleep(1)
-    print('thread %s ended.' % threading.current_thread().name)
+a = re.match(r"\d+", "123abc")
+b = re.match(r"\d+", "abc123")
 
-print('thread %s is running...' % threading.current_thread().name)
-t = threading.Thread(target=loop, name='LoopThread')
-t.start()
-t.join()
-print('thread %s ended.' % threading.current_thread().name)
+print(a)    # <re.Match object; span=(0, 3), match='123'>
+print(b)    # None
 ```
 
-执行结果如下：
+4. `re.sub()` —— 替换
+
+用于字符串替换。
 
 ```python
-thread MainThread is running...
-thread LoopThread is running...
-thread LoopThread >>> 1
-thread LoopThread >>> 2
-thread LoopThread >>> 3
-thread LoopThread >>> 4
-thread LoopThread >>> 5
-thread LoopThread ended.
-thread MainThread ended.
+import re
+
+text = "手机号：13812345678"
+new_text = re.sub(r"\d{11}", "***", text)
+print(new_text)    # 手机号：***
 ```
 
-由于任何进程默认就会启动一个线程，我们把该线程称为 **主线程** ，主线程又可以启动新的线程， Python的 `threading` 模块有个 `current_thread()` 函数，它永远返回当前线程的实例。主线程实例的名字叫 `MainThread` ，子线程的名字在创建时指定，我们用 `LoopThread` 命名子线程。 名字仅仅在打印时用来显示，完全没有其他意义，如果不起名字Python就自动给线程命名为 `Thread-1` ， `Thread-2` , ……
+5. `re.split()` —— 正则分割
 
-多线程和多进程最大的不同在于，多进程中，同一个变量，各自有一份拷贝存在于每个进程中， 互不影响，而多线程中，所有变量都由所有线程共享，所以，任何一个变量都可以被任何一个线程修改，因此，线程之间共享数据最大的危险在于多个线程同时改一个变量，把内容给改乱了。
-
-如果我们要确保数据计算正确，就要给线程上一把锁，当某个线程开始执行时，我们说，该线程因为获得了锁，因此其他线程不能同时执行，只能等待，直到锁被释放后，获得该锁以后才能改。由于锁只有一个，无论多少线程，同一时刻最多只有一个线程持有该锁，所以，不会造成修改的冲突。创建一个锁是通过 `threading.Lock()` 来实现的：
+相比于 `str.split()` 更加灵活。
 
 ```python
-balance = 0
-lock = threading.Lock()
-def run_thread(n):
-    for i in range(100000):
-        # 先要获取锁:
-        lock.acquire()
-        try:
-            # 放心地改吧:
-            change_it(n)
-        finally:
-            # 改完了一定要释放锁:
-            lock.release()
+import re
+
+text = "apple    banana,orange;;;grape"
+result = re.split(r"[\s,;]+", text)
+print(result)    # ['apple', 'banana', 'orange', 'grape']
 ```
 
-当多个线程同时执行 `lock.acquire()` 时，只有一个线程能成功地获取锁，然后继续执行代码， 其他线程就继续等待直到获得锁为止。 获得锁的线程用完后一定要释放锁，否则那些苦苦等待锁的线程将永远等待下去，成为死线程。 所以我们用 `try...finally` 来确保锁一定会被释放。
+### 4. 分组
 
-锁的好处就是确保了某段关键代码只能由一个线程从头到尾完整地执行，坏处当然也很多，首先是阻止了多线程并发执行，包含锁的某段代码实际上只能以单线程模式执行，**效率就大大地下降了**。其次，由于可以存在多个锁，不同的线程持有不同的锁，并试图获取对方持有的锁时，**可能会造成死锁**，导致多个线程全部挂起，既不能执行，也无法结束，只能靠操作系统强制终止。
-
-Python的线程虽然是真正的线程，但解释器执行代码时，有一个**GIL锁（Global Interpreter Lock）**，任何Python线程执行前，必须先获得GIL锁，然后，每执行100条字节码，解释器就自动释放GIL锁，让别的线程有机会执行。这个GIL全局锁实际上把所有线程的执行代码都给上了锁， 所以，多线程在Python中只能交替执行，即使100个线程跑在100核CPU上，也只能用到1个核。
-
-GIL是Python解释器设计的历史遗留问题，通常我们用的解释器是官方实现的CPython，要真正利用多核，除非重写一个不带GIL的解释器。
-
-所以，在Python中，可以使用多线程，但不要指望能有效利用多核。如果一定要通过多线程利用 多核，那只能通过C扩展来实现，不过这样就失去了Python简单易用的特点。 不过，也不用过于担心，Python虽然不能利用多线程实现多核任务，但可以通过多进程实现多核任务。多个Python进程有各自独立的GIL锁，互不影响。
-
-【小结】
-
-多线程编程，模型复杂，容易发生冲突，必须用锁加以隔离，同时，又要小心死锁的发生。 Python解释器由于设计时有GIL全局锁，导致了多线程无法利用多核。
-
-##### 3. ThreadLocal
-
-在多线程环境下，每个线程都有自己的数据。一个线程使用自己的局部变量比使用全局变量好， 因为局部变量只有线程自己能看见，不会影响其他线程，而全局变量的修改必须加锁。但是局部变量也有问题，就是在函数调用的时候，传递起来很麻烦。`ThreadLocal` 应运而生：
+1. 普通分组
 
 ```python
-import threading
+import re
 
-# 创建全局ThreadLocal对象:
-local_school = threading.local()
+text = "生日：1998-08-23"
+m = re.search(r"(\d{4})-(\d{2})-(\d{2})", text)
 
-def process_student():
-    # 获取当前线程关联的student:
-    std = local_school.student
-    print('Hello, %s (in %s)' % (std, threading.current_thread().name))
-
-def process_thread(name):
-    # 绑定ThreadLocal的student:
-    local_school.student = name
-    process_student()
-
-t1 = threading.Thread(target= process_thread, args=('Alice',), name='Thread-A')
-t2 = threading.Thread(target= process_thread, args=('Bob',), name='Thread-B')
-t1.start()
-t2.start()
-t1.join()
-t2.join()
+print(m.group(0))    # 1998-08-23
+print(m.group(1))    # 1998
+print(m.group(2))    # 08
+print(m.group(3))    # 23
 ```
 
-全局变量 `local_school` 就是一个 `ThreadLocal` 对象，每个 `Thread` 对它都可以读写 `student` 属性，但互不影响。你可以把 `local_school` 看成全局变量，但每个属性如 `local_school.student` 都是线程的局部变量，可以任意读写而互不干扰，也不用管理锁的问 题， `ThreadLocal` 内部会处理。
-
-`ThreadLocal` 最常用的地方就是为每个线程绑定一个数据库连接，HTTP请求，用户身份信息等，这样一个线程的所有调用到的处理函数都可以非常方便地访问这些资源。
-
-【小结】
-
-一个 `ThreadLocal` 变量虽然是全局变量，但每个线程都只能读写自己线程的独立副本，互不干扰。 `ThreadLocal` 解决了参数在一个线程中各个函数之间互相传递的问题。
-
-### 正则表达式
-
-正则表达式是一种用来匹配字符串的强有力的武器。它的设计思想是用一种描述性的语言来给字 符串定义一个规则，凡是符合规则的字符串，我们就认为它“匹配”了，否则，该字符串就是不合法的。
-
-在正则表达式中，如果直接给出字符，就是精确匹配。用 `\d` 可以匹配一个数字， `\w` 可以匹配一个字母或数字，所以：
-
-- `'00\d'` 可以匹配 `'007'` ，但无法匹配 `'00A'` ；
-- `'\d\d\d'` 可以匹配 `'010'` ； 
-- `'\w\w\d'` 可以匹配 `'py3'` ；
-
-`.` 可以匹配任意字符，所以：
-
-- `'py.'` 可以匹配 `'pyc'` 、 `'pyo'` 、 `'py!'` 等等。
-
-要匹配变长的字符，在正则表达式中，用 `*` 表示任意个字符（包括0个），用 `+` 表示至少一个字符，用 `?` 表示0个或1个字符，用 `{n}` 表示n个字符，用 `{n,m}` 表示n-m个字符。
-
-来看一个复杂的例子： `\d{3}\s+\d{3,8}` 。
-
-1. `\d{3}` 表示匹配3个数字，例如 `'010'` ；
-2. `\s` 可以匹配一个空格（也包括Tab等空白符），所以 `\s+` 表示至少有一个空格，例如匹配 `' '` ， `'   '` 等；
-3. `\d{3,8}` 表示3-8个数字，例如 `'1234567'` 。
-
-综合起来，上面的正则表达式可以匹配以任意个空格隔开的带区号的电话号码。
-
-如果要匹配 `'010-12345'` 这样的号码呢？由于 `'-'` 是特殊字符，在正则表达式中，要用 `'\'` 转义，所以，上面的正则是 `\d{3}\-\d{3,8}` 。
-
-要做更精确地匹配，可以用 `[]` 表示范围，比如：
-
-- `[0-9a-zA-Z\_]` 可以匹配一个数字、字母或者下划线； 
-- `[0-9a-zA-Z\_]+` 可以匹配至少由一个数字、字母或者下划线组成的字符串，比 如 `'a100'` ， `'0_Z'` ， `'Py3000'` 等等；
--  `[a-zA-Z\_][0-9a-zA-Z\_]*` 可以匹配由字母或下划线开头，后接任意个由一个数字、字母或者下划线组成的字符串，也就是Python合法的变量； 
-- `[a-zA-Z\_][0-9a-zA-Z\_]{0, 19}` 更精确地限制了变量的长度是1-20个字符（前面1个字符 + 后面最多19个字符）。
-
-`A|B` 可以匹配A或B，所以 `(P|p)ython` 可以匹配 `'Python'` 或者 `'python'` 。 
-
-`^` 表示行的开头， `^\d` 表示必须以数字开头。 
-
-`$` 表示行的结束， `\d$` 表示必须以数字结束。 
-
-你可能注意到了， `py` 也可以匹配 `'python'` ，但是加上 `^py$` 就变成了整行匹配，就只能匹配 `'py'` 了。
-
-Python提供 `re` 模块，包含所有正则表达式的功能。由于Python的字符串本身也用 `\` 转义，所以要特别注意：
+2. 命名分组
 
 ```python
-s = 'ABC\\-001' # Python的字符串
-# 对应的正则表达式字符串变成 'ABC\-001'
+import re
+
+m = re.search(
+    r"(?P<year>\d{4})-(?P<month>\d{2})-(?P<day>\d{2})",
+    "1998-08-23"
+)
+
+print(m.group("year"))    # 1998
 ```
 
-因此我们强烈建议使用Python的 `r` 前缀，就不用考虑转义的问题了：
 
-```python
-s = r'ABC\-001' # Python的字符串
-# 对应的正则表达式字符串不变：'ABC\-001'
-```
 
-如何判断正则表达式是否匹配：
 
-```python
->>> import re
->>> re.match(r'^\d{3}\-\d{3,8}$', '010-12345')
-<_sre.SRE_Match object; span=(0, 9), match='010-12345'>
->>> re.match(r'^\d{3}\-\d{3,8}$', '010 12345')
->>>
-```
 
-`match()` 方法判断是否匹配，如果匹配成功，返回一个 `Match` 对象，否则返回 `None` 。常见的判断方法就是：
 
-```python
-test = '用户输入的字符串'
-if re.match(r'正则表达式', test):
-	print('ok')
-else:
-	print('failed')
-```
 
-正常的切分字符串无法识别连续的空格：
 
-```python
->>> 'a b   c'.split(' ')
-['a', 'b', '', '', 'c']
-```
 
-而使用正则表达式无论多少个空格都可以正常分割:
 
-```python
->>> re.split(r'\s+', 'a b   c')
-['a', 'b', 'c']
-```
 
-如果用户输入了一组标签，下次记得用正则表达式来把不规范的输入转化成正确的数组:
 
-```python
->>> re.split(r'[\s\,\;]+', 'a,b;;c   d')
-['a', 'b', 'c', 'd']
-```
 
-除了简单地判断是否匹配之外，正则表达式还有提取子串的强大功能。
 
-- 普通分组 `( ... )` 在正则中有两个功能：
 
-1. 把子表达式作为整体（控制优先级）
-2. 捕获匹配内容，可以通过 `group()` 方法取出来。 注意到 `group(0)` 永远是与整个正则表达式相匹配的字符串，而 `group(1)` 、 `group(2)` 、...表示第1、2、...个子串
 
-- 非捕获分组`(?: ... )` 只保留分组功能，不会生成 `group(1)`、`group(2)` 这样的编号结果。
 
-正则表达式可以直接识别合法的时间：
 
-```python
->>> t = '19:05:30'
->>> m = re.match(r'^(0[0-9]|1[0-9]|2[0-3]|[0-9])\:(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|[0-9])\:(0[0-9]|1[0-9]|2[0-9]|3[0-9]|4[0-9]|5[0-9]|[0-9])$', t)
->>> m.groups()
-('19', '05', '30')
-```
 
-但是有些时候，用正则表达式也无法做到完全验证， 比如识别日期：
 
-```python
-'^(0[1-9]|1[0-2]|[0-9])-(0[1-9]|1[0-9]|2[0-9]|3[0-1]|[0-9])$'
-```
-
-对于 `'2-30'` ， `'4-31'` 这样的非法日期，用正则还是识别不了，或者说写出来非常困难，这时就需要程序配合识别了。
-
-值得一提的是，正则匹配默认是贪婪匹配，也就是匹配尽可能多的字符。举例如下，匹配出数字后面的 `0` ：
-
-```python
->>> m = re.match(r'^(\d+)(0*)$', '102300').groups()
-('102300', '')
-```
-
-由于 `\d+` 采用贪婪匹配，直接把后面的 `0` 全部匹配了，结果 `0*` 只能匹配空字符串了。 必须让 `\d+` 采用非贪婪匹配（也就是尽可能少匹配），才能把后面的 `0` 匹配出来，加个 `?` 就可以让 `\d+` 采用非贪婪匹配：
-
-```python
->>> m = re.match(r'^(\d+?)(0*)$', '102300').groups()
-('1023', '00')
-```
-
-当我们在Python中使用正则表达式时，re模块内部会干两件事情： 
-
-1. 编译正则表达式，如果正则表达式的字符串本身不合法，会报错； 
-
-2. 用编译后的正则表达式去匹配字符串。 
-
-如果一个正则表达式要重复使用几千次，出于效率的考虑，我们可以预编译该正则表达式，接下来重复使用时就不需要编译这个步骤了，直接匹配：
-
-```python
->>> import re
->>> re_telephone = re.compile(r'^(\d{3})-(\d{3,8})$')
->>> re_telephone.match('010-12345').groups()
-('010', '12345')
->>> re_telephone.match('010-8086').groups()
-('010', '8086')
-```
 
 ### 常用内建模块
 
