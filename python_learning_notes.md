@@ -2399,9 +2399,9 @@ print(re_telephone.match('010-8086').groups())    # ('010', '8086')
 
 
 
-### 常用内建模块
+## 十、常用内建模块
 
-##### 1. datetime
+### 1. datetime
 
 `datetime` 是Python处理日期和时间的标准库。
 
@@ -2566,7 +2566,7 @@ print(tokyo_dt2)
 
 如果要存储 `datetime` ，最佳方法是将其转换为timestamp（调用 `timestamp()` 方法实现）再存储，因为timestamp的值与时区完全无关。
 
-##### 2. collections
+### 2. collections
 
 `collections` 模块提供了一些有用的集合类，可以根据需要选用。
 
@@ -2584,7 +2584,7 @@ print(tokyo_dt2)
 2
 ```
 
-这样一来，我们用 `namedtuple` 可以很方便地定义一种数据类型，它具备tuple的不变性，又可以 **根据属性来引用**，使用十分方便。
+这样一来，我们用 `namedtuple` 可以很方便地定义一种数据类型，它具备tuple的不变性，又可以根据属性来引用，使用十分方便。
 
 - deque
 
@@ -2747,7 +2747,7 @@ color=blue
 user=alice
 ```
 
-##### 3. argparse
+### 3. argparse
 
 使用 `argparse` 解析参数，只需定义好参数类型，就可以获得有效的参数输入，能大大简化获取命令行参数的工作。
 
@@ -2858,7 +2858,7 @@ args = parser.parse_args()
 
 我们不必捕获异常， `parse_args()` 非常方便的一点在于，如果参数有问题，则它打印出错误信息后，结束进程；如果参数是 `-h` ，则它打印帮助信息后，结束进程。只有当参数全部有效时， 才会返回一个NameSpace对象，获取对应的参数就把参数名当作属性获取，非常方便。 
 
-##### 4. base64
+### 4. base64
 
 Base64 是一种编码方式，用于把二进制数据（比如图片、文件、字节流）转换成只包含 ASCII 字符的文本字符串。它接收一串 字节，把它编码成另一串字节，只是这串新字节中每个字节对应的是 ASCII 可打印字符。
 
@@ -2895,7 +2895,7 @@ b'i\xb7\x1d\xfb\xef\xff'
 
 Base64适用于小段内容的编码，比如数字证书签名、Cookie的内容等。
 
-##### 5. struct
+### 5. struct
 
 `struct` 模块是Python标准库中的一个 **用于在Python的数据类型（如整数、浮点数、字符串等）与 C语言风格的二进制数据之间进行转换** 的模块。
 
@@ -2962,7 +2962,7 @@ Windows的位图文件（.bmp）是一种非常简单的文件格式，BMP格式
 
 结果显示， `b'B'` 、 `b'M'` 说明是Windows位图，位图大小为640x360，颜色数为24。
 
-##### 6. hashlib
+### 6. hashlib
 
 Python的 `hashlib` 提供了常见的哈希算法，如MD5，SHA1等等。
 
@@ -3050,7 +3050,7 @@ def calc_md5(password):
 
 哈希算法在很多地方都有广泛的应用。要注意哈希算法不是加密算法，不能用于加密（因为无法 通过哈希反推明文），只能用于防篡改，但是它的单向计算特性决定了可以在不存储明文口令的情况下验证用户口令。
 
-##### 7. hmac
+### 7. hmac
 
 为了防止黑客通过彩虹表根据哈希值反推原始口令，在计算哈希的时候，不能仅针对原始输入计算，需要增加一个salt来使得相同的输入也能得到不同的哈希，这样，大大增加了黑客破解的难度。
 
@@ -3078,7 +3078,7 @@ Python自带的hmac模块实现了标准的Hmac算法，下面我们来看看如
 
 Python内置的hmac模块实现了标准的Hmac算法，它利用一个key对message计算“杂凑”后的hash，使用hmac算法比标准hash算法更安全，因为针对相同的message，不同的key会产生不同的hash。
 
-##### 8. itertools
+### 8. itertools
 
 Python的内建模块 `itertools` 提供了非常有用的用于操作迭代对象的函数。
 
@@ -3186,7 +3186,7 @@ A ['A', 'A', 'a']
 
 `itertools` 模块提供的全部是处理迭代功能的函数，它们的返回值不是list，而是Iterator，只有用for循环迭代的时候才真正计算。
 
-##### 8. contextlib
+### 8. contextlib
 
 Python的 `with` 语句允许我们非常方便地使用资源，而不必担心资源没有关闭：
 
@@ -3276,7 +3276,7 @@ world
 
 因此， `@contextmanager` 让我们通过编写generator来简化上下文管理。
 
-##### 9. venv
+### 9. venv
 
 `venv` 为应用提供了隔离的Python运行环境，解决了不同应用间安装多版本的冲突问题。
 
@@ -3337,9 +3337,9 @@ bin$
 
 此时就回到了正常的环境，现在继续 `pip` 或 `python` 均是在系统Python环境下执行。
 
-### 常用第三方模块
+## 十一、常用第三方模块
 
-##### 1. Pillow
+### 1. Pillow
 
 PIL：Python Imaging Library，已经是Python平台事实上的图像处理标准库了。PIL功能非常强大，但API却非常简单易用。 由于PIL仅支持到Python 2.7，加上年久失修，于是一群志愿者在PIL的基础上创建了兼容的版本，名字叫Pillow，支持最新Python 3.x，又加入了许多新特性。
 
@@ -3381,7 +3381,7 @@ img.convert("L").save("gray.png")  # 转换为灰度图
 
 其他功能如切片、旋转、滤镜、输出文字、调色板等一应俱全。
 
-##### 2. Requests
+### 2. Requests
 
 `requests` 是Python中最常用、最优雅的HTTP网络请求库之一，广泛用于网页爬取、API调用、接口测试等场景。
 
@@ -3451,7 +3451,7 @@ print(r.url)         # 最终 URL
 print(r.headers)     # 响应头
 ```
 
-##### 3. chardet
+### 3. chardet
 
 `chardet` 的作用是自动检测文本的字符编码。当我们拿到一个 字节串(bytes) 时，就可以对其检测编码。
 
