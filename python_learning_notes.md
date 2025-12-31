@@ -2535,181 +2535,66 @@ dt_ny = dt_sh.astimezone(ZoneInfo("America/New_York"))
 
 `collections` 模块提供了一些有用的集合类，可以根据需要选用。
 
-- namedtuple
+1. namedtuple
 
-`namedtuple()` 函数用来创建一个自定义的tuple对象，并且规定了tuple元素的个数，并可以用属性而不是索引来引用tuple的某个元素。
-
-```python
->>> from collections import namedtuple
->>> Point = namedtuple('Point', ['x', 'y'])
->>> p = Point(1, 2)
->>> p.x
-1
->>> p.y
-2
-```
-
-这样一来，我们用 `namedtuple` 可以很方便地定义一种数据类型，它具备tuple的不变性，又可以根据属性来引用，使用十分方便。
-
-- deque
-
-使用 `list` 存储数据时，按索引访问元素很快，但是插入和删除元素就很慢了，因为 `list` 是线性存储，数据量大的时候，插入和删除效率很低。
-
-而 `deque` 是为了高效实现插入和删除操作的双向列表，适合用于队列和栈：
+`namedtuple` 是Python中用于创建‌具名元组的工厂函数，它允许通过名称或索引来访问元组元素，从而提升代码可读性。‌
 
 ```python
->>> from collections import deque
->>> q = deque(['a', 'b', 'c'])
->>> q.append('x')
->>> q.appendleft('y')
->>> q
-deque(['y', 'a', 'b', 'c', 'x'])
+from collections import namedtuple
+
+Point = namedtuple('Point', ['x', 'y'])
+p = Point(1, 2)
+print(p.x)  # 1
+print(p.y)  # 2
 ```
 
-`deque` 除了实现list的 `append() `和 `pop()` 外，还支持 `appendleft()` 和 `popleft()` ，这 样就可以非常高效地往头部添加或删除元素。
+用 `namedtuple` 定义的数据类型，既具备tuple的不变性，又可以根据属性来引用，使用十分方便。
 
-- defaultdict
+2. deque
 
-使用 `dict` 时，如果引用的Key不存在，就会抛出 `KeyError` 。如果希望key不存在时，返回一个默认值，就可以用 `defaultdict` ：
+使用list存储数据时，按索引访问元素很快，但是插入和删除元素就很慢了，因为list是线性存储，数据量大的时候，插入和删除效率很低。
+
+而 `deque` 是为了高效实现插入和删除操作的双向列表，其除了实现list的 `append() `和 `pop()` 外，还支持 `appendleft()` 和 `popleft()` ，这样就可以非常高效地往头部添加或删除元素。
 
 ```python
->>> from collections import defaultdict
->>> dd = defaultdict(lambda: 'N/A')
->>> dd['key1'] = 'abc'
->>> dd['key1'] # key1存在
-'abc'
->>> dd['key2'] # key2不存在，返回默认值
-'N/A'
+from collections import deque
+
+q = deque(['a', 'b', 'c'])
+q.append('x')
+q.appendleft('y')
+print(q)  # deque(['y', 'a', 'b', 'c', 'x'])
 ```
 
-注意：默认值是调用函数返回的，而函数在创建 `defaultdict` 对象时传入。 除了在Key不存在时返回默认值， `defaultdict` 的其他行为跟 `dict` 是完全一样的。
+3. defaultdict
 
-- OrderedDict
-
-使用 `dict` 时，Key是无序的。在对 `dict` 做迭代时，我们无法确定Key的顺序。 如果要保持Key的顺序，可以用 `OrderedDict` ：
+使用dict时，如果引用的Key不存在，就会抛出KeyError。如果希望key不存在时，返回一个默认值，就可以用 `defaultdict` ：
 
 ```python
->>> from collections import OrderedDict
->>> d = dict([('a', 1), ('b', 2), ('c', 3)])
->>> d # dict的Key是无序的
-{'a': 1, 'c': 3, 'b': 2}
->>> od = OrderedDict([('a', 1), ('b', 2), ('c', 3)])
->>> od # OrderedDict的Key是有序的
-OrderedDict([('a', 1), ('b', 2), ('c', 3)])
+from collections import defaultdict
+
+dd = defaultdict(lambda: 'N/A')
+dd['key1'] = 'abc'
+print(dd['key1']) # 'abc'
+print(dd['key2']) # 'N/A'
 ```
 
-注意， `OrderedDict` 的Key会按照插入的顺序排列，不是Key本身排序：
+注意：默认值是调用函数返回的，而函数在创建 `defaultdict` 对象时传入。 除了在Key不存在时返回默认值， `defaultdict` 的其他行为跟dict是完全一样的。
+
+4. Counter
+
+`Counter` 是一个简单的计数器，实际上也是dict的一个子类，用来统计可哈希对象出现的次数。例如：
 
 ```python
->>> od = OrderedDict()
->>> od['z'] = 1
->>> od['y'] = 2
->>> od['x'] = 3
->>> list(od.keys()) # 按照插入的Key的顺序返回
-['z', 'y', 'x']
-```
+from collections import Counter
 
-利用 `OrderedDict` 可以实现一个FIFO（先进先出）的dict，当容量超出限制时，先删除最早添加的Key：
+c = Counter('programming')
+print(c)  # Counter({'r': 2, 'g': 2, 'm': 2, 'p': 1, 'o': 1, 'a': 1, 'i': 1, 'n': 1})
 
-```python
-from collections import OrderedDict
+nums = [1, 2, 2, 3, 3, 3]
+c = Counter(nums)
 
-class FIFODict(OrderedDict):
-    def __init__(self, capacity):
-        super().__init__()
-        self.capacity = capacity  # 最大容量
-
-    def __setitem__(self, key, value):
-        # 如果 key 已存在，先删除它（避免位置不对）
-        if key in self:
-            del self[key]
-        # 插入新的键值对（会放在末尾）
-        OrderedDict.__setitem__(self, key, value)
-        # 如果超过容量，弹出最早插入的一个
-        if len(self) > self.capacity:
-            oldest = next(iter(self))  # 第一个键
-            self.pop(oldest)
-            
-fifo = FIFODict(3)
-
-fifo['a'] = 1
-fifo['b'] = 2
-fifo['c'] = 3
-print(fifo)  # OrderedDict([('a', 1), ('b', 2), ('c', 3)])
-
-fifo['d'] = 4  # 超过容量，自动删除最早的 'a'
-print(fifo)  # OrderedDict([('b', 2), ('c', 3), ('d', 4)])
-```
-
-- ChainMap
-
-`ChainMap` 可以把一组 `dict` 串起来并组成一个逻辑上的 `dict` 。 `ChainMap` 本身也是一个 `dict`，但是查找的时候，会按照顺序在内部的 `dict` 依次查找。
-
-什么时候使用 `ChainMap` 最合适？举个例子：应用程序往往都需要传入参数，参数可以通过命令行传入，可以通过环境变量传入，还可以有默认参数。我们可以用 `ChainMap` 实现参数的优先级查找，即先查命令行参数，如果没有传入，再查环境变量，如果还是没有，就使用默认参数。
-
-```python
-from collections import ChainMap
-import os, argparse
-
-# 构造缺省参数:
-defaults = {
- 'color': 'red',
- 'user': 'guest'
-}
-
-# 构造命令行参数:
-parser = argparse.ArgumentParser()
-parser.add_argument('-u', '--user')
-parser.add_argument('-c', '--color')
-namespace = parser.parse_args()
-command_line_args = { k: v for k, v in vars(namespace).items() if v }
-
-# 组合成ChainMap:
-combined = ChainMap(command_line_args, os.environ, defaults)
-
-# 打印参数:
-print('color=%s' % combined['color'])
-print('user=%s' % combined['user'])
-```
-
-没有任何参数时，打印出默认参数：
-
-```
-D:\PythonProject\general>python use_chainmap.py
-color=red
-user=guest
-```
-
-传入命令行参数运行，优先使用命令行参数：
-
-```
-D:\PythonProject\general>python use_chainmap.py -u alice -c blue
-color=blue
-user=alice
-```
-
-传入环境变量运行：
-
-```
-D:\PythonProject\general>set user=bob
-
-D:\PythonProject\general>set color=green
-
-D:\PythonProject\general>python use_chainmap.py
-color=green
-user=bob
-```
-
-同时传入命令行参数和环境变量，命令行参数的优先级较高：
-
-```
-D:\PythonProject\general>set user=mike
-
-D:\PythonProject\general>set color=pink
-
-D:\PythonProject\general>python use_chainmap.py -u alice -c blue
-color=blue
-user=alice
+print(c[3])   # 3
+print(c[99])  # 0（不存在不会抛出KeyError）
 ```
 
 ### 3. argparse
@@ -2737,34 +2622,34 @@ def main():
     parser = argparse.ArgumentParser(
         prog='backup',  # 程序名
         description='Backup MySQL database.',  # 描述
-        epilog='Copyright (r), 2023'  # 说明信息
+        epilog='Copyright (r), 2025'  # 说明信息
     )
 
-    # 可选参数
-    parser.add_argument('--host', default='localhost', help="主机名或 IP 地址")
+    # 关键字参数
+    parser.add_argument('--host', default='localhost', help="主机名或IP地址")
     parser.add_argument('--port', default=3306, type=int, help="端口号")
     parser.add_argument('-u', '--user', required=True, help="用户名")
     parser.add_argument('-p', '--password', required=True, help="密码")
     parser.add_argument('--database', required=True, help="数据库名称")
-    parser.add_argument('-gz', '--gzcompress', required=False, action='store_true', help='是否压缩备份文件 (.gz 格式)')
+    parser.add_argument('-gz', '--gzcompress', action='store_true', help='是否压缩备份文件 (.gz 格式)')
 
-    # 位置参数（必须输入）
+    # 位置参数
     parser.add_argument('outfile', help="备份文件保存路径")
 
     # 解析参数
     args = parser.parse_args()
 
-    # 打印参数
+    # 打印一下命令行里所输入的参数
     print('Parsed arguments:')
-    print(f'outfile     = {args.outfile}')
     print(f'host        = {args.host}')
     print(f'port        = {args.port}')
     print(f'user        = {args.user}')
     print(f'password    = {args.password}')
     print(f'database    = {args.database}')
     print(f'gzcompress  = {args.gzcompress}')
+    print(f'outfile     = {args.outfile}')
 
-
+    
 if __name__ == '__main__':
     main()
 ```
@@ -2772,29 +2657,29 @@ if __name__ == '__main__':
 输入有效的参数，则程序能解析出所需的所有参数：
 
 ```
-D:\PythonProject\general>python backup.py -u root -p 123456 --database testdb backup.sql
+D:\PythonProject\python_learning_notes>python exercise26_Argparse.py --host 127.0.0.1 --port 114514 -u root -p 123456 --database my_db -gz backyp.sql
 Parsed arguments:
-outfile     = backup.sql
-host        = localhost
-port        = 3306
+host        = 127.0.0.1
+port        = 114514
 user        = root
 password    = 123456
-database    = testdb
-gzcompress  = False
+database    = my_db
+gzcompress  = True
+outfile     = backyp.sql
 ```
 
 缺少必要的参数，或者参数不对，将报告详细的错误信息：
 
 ```
-D:\PythonProject\general>python backup.py --database testdb backup.sql
+D:\PythonProject\python_learning_notes>python exercise26_Argparse.py -u root -p 123456 --database my_db -gz
 usage: backup [-h] [--host HOST] [--port PORT] -u USER -p PASSWORD --database DATABASE [-gz] outfile
-backup: error: the following arguments are required: -u/--user, -p/--password
+backup: error: the following arguments are required: outfile
 ```
 
-更神奇的是，如果输入 `-h` ，则打印帮助信息：
+此外，如果输入 `-h` ，则打印帮助信息：
 
 ```
-D:\PythonProject\general>python backup.py -h
+D:\PythonProject\python_learning_notes>python exercise26_Argparse.py -h
 usage: backup [-h] [--host HOST] [--port PORT] -u USER -p PASSWORD --database DATABASE [-gz] outfile
 
 Backup MySQL database.
@@ -2804,7 +2689,7 @@ positional arguments:
 
 options:
   -h, --help            show this help message and exit
-  --host HOST           主机名或 IP 地址
+  --host HOST           主机名或IP地址
   --port PORT           端口号
   -u, --user USER       用户名
   -p, --password PASSWORD
@@ -2812,16 +2697,10 @@ options:
   --database DATABASE   数据库名称
   -gz, --gzcompress     是否压缩备份文件 (.gz 格式)
 
-Copyright (r), 2023
+Copyright (r), 2025
 ```
 
-获取有效参数的代码实际上是这一行：
-
-```python
-args = parser.parse_args()
-```
-
-我们不必捕获异常， `parse_args()` 非常方便的一点在于，如果参数有问题，则它打印出错误信息后，结束进程；如果参数是 `-h` ，则它打印帮助信息后，结束进程。只有当参数全部有效时， 才会返回一个NameSpace对象，获取对应的参数就把参数名当作属性获取，非常方便。 
+使用 `argparse` 后，解析参数的工作被大大简化了，我们可以专注于定义参数，然后直接获取到有效的参数输入。
 
 ### 4. base64
 
@@ -3301,170 +3180,3 @@ bin$
 ```
 
 此时就回到了正常的环境，现在继续 `pip` 或 `python` 均是在系统Python环境下执行。
-
-## 十一、常用第三方模块
-
-### 1. Pillow
-
-PIL：Python Imaging Library，已经是Python平台事实上的图像处理标准库了。PIL功能非常强大，但API却非常简单易用。 由于PIL仅支持到Python 2.7，加上年久失修，于是一群志愿者在PIL的基础上创建了兼容的版本，名字叫Pillow，支持最新Python 3.x，又加入了许多新特性。
-
-`PIL` 提供了操作图像的强大功能，可以通过简单的代码完成复杂的图像处理：
-
-- 安装 Pillow
-
-```bash
-pip install Pillow
-```
-
-- 打开和显示图片： `open()` 和 `show()`
-
-```python
-from PIL import Image
-
-# 打开图片
-img = Image.open("example.jpg")
-
-# 显示图片
-img.show()
-
-# 查看基本信息
-print(img.format, img.size, img.mode)
-```
-
-- 保存图片： `save()`
-
-```python
-img.save("output.png")  # 保存为PNG格式
-```
-
-- 图像格式转换： `convert()`
-
-```python
-img = Image.open("example.jpg")
-img.convert("L").save("gray.png")  # 转换为灰度图
-```
-
-其他功能如切片、旋转、滤镜、输出文字、调色板等一应俱全。
-
-### 2. Requests
-
-`requests` 是Python中最常用、最优雅的HTTP网络请求库之一，广泛用于网页爬取、API调用、接口测试等场景。
-
-- 发送GET请求：
-
-```python
-import requests
-
-response = requests.get("https://api.github.com")
-print(response.text)
-```
-
-对于带参数的URL，传入一个字典作为参数：
-
-```python
->>> r = requests.get('https://www.douban.com/search', params={'q':'python','cat':'1001'})
->>> r.url
-'https://www.douban.com/search?q=python&cat=1001'
-```
-
-- 发送POST请求：
-
-```python
-login_data = {"username": "admin", "password": "123456"}
-response = requests.post("https://example.com/login", data=login_data)
-```
-
-`requests` 默认使用 `application/x-www-form-urlencoded` 对POST数据编码。如果要传递JSON数据，可以直接传入json参数：
-
-```python
-my_data = {'key': 'value'}
-r = requests.post(url, json=my_data) # 内部自动序列化为JSON
-```
-
-类似的，如果要上传文件，这将需要更复杂的编码格式，但是 `requests` 把它简化成 `files` 参数：
-
-```python
-files = {"file": open("test.png", "rb")}
-r = requests.post("https://example.com/upload", files=files)
-```
-
-注意，在读取文件时，务必使用 '`rb'` 即二进制模式读取，这样获取的字节长度才是文件的长度。
-
-此外，把 `post()` 方法替换为 `put()` ， `delete()` 等，就可以以PUT或DELETE方式请求资源。
-
-- 一些常用参数：
-
-| 参数      | 说明                                          | 示例                                                         |
-| --------- | --------------------------------------------- | ------------------------------------------------------------ |
-| `params`  | URL 查询参数                                  | `requests.get(url, params={"q": "python"})`                  |
-| `data`    | 表单数据（application/x-www-form-urlencoded） | `requests.post(url, data={"key":"value"})`                   |
-| `json`    | 发送 JSON 数据                                | `requests.post(url, json={"name": "GPT"})`                   |
-| `headers` | 自定义请求头                                  | `requests.get(url, headers={"User-Agent": "MyApp"})`         |
-| `cookies` | 发送 cookies                                  | `requests.get(url, cookies={"sessionid": "abc123"})`         |
-| `timeout` | 超时时间（秒）                                | `requests.get(url, timeout=5)`                               |
-| `proxies` | 使用代理                                      | `requests.get(url, proxies={"http": "http://127.0.0.1:8080"})` |
-
-- 获取响应内容
-
-```python
-r = requests.get("https://jsonplaceholder.typicode.com/todos/1")
-
-print(r.text)        # 原始文本
-print(r.json())      # 解析为 JSON 对象
-print(r.status_code) # 状态码
-print(r.url)         # 最终 URL
-print(r.headers)     # 响应头
-```
-
-### 3. chardet
-
-`chardet` 的作用是自动检测文本的字符编码。当我们拿到一个 字节串(bytes) 时，就可以对其检测编码。
-
-```python
->>> chardet.detect(b'Hello, world!')
-{'encoding': 'ascii', 'confidence': 1.0, 'language': ''}
-```
-
-检测出的编码是 `ascii` ，注意到还有个 `confidence` 字段，表示检测的概率是1.0（即100%）。
-
-再来试试检测GBK编码的中文：
-
-```python
->>> data = '离离原上草，一岁一枯荣'.encode('gbk')
->>> chardet.detect(data)
-{'encoding': 'GB2312', 'confidence': 0.7407407407407407, 'language':
-'Chinese'}
-```
-
-检测的编码是 `GB2312` ，注意到GBK是GB2312的超集，两者是同一种编码，检测正确的概率是74%，`language` 字段指出的语言是 `'Chinese'` 。
-
-再试试对日文进行检测：
-
-```python
->>> data = '最新の主要ニュース'.encode('euc-jp')
->>> chardet.detect(data)
-{'encoding': 'EUC-JP', 'confidence': 0.99, 'language': 'Japanese'}
-```
-
-可见，用 `chardet` 检测编码，使用简单。获取到编码后，再转换为 `str `，就可以方便后续处理。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

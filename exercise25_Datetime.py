@@ -1,3 +1,4 @@
+"""
 from datetime import datetime, timezone, timedelta, UTC
 from zoneinfo import ZoneInfo
 
@@ -62,5 +63,33 @@ print(f'给本地时间声名时区：{dt_sh}')
 # 8.2 转成目标时区
 dt_ny = dt_sh.astimezone(ZoneInfo("America/New_York"))
 print(f'转成目标时区:{dt_ny}')
+"""
+import re
+from datetime import datetime, timezone, timedelta
 
+def to_timestamp(dt_str, tz_str):
+    naive_dt = datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S')
+
+    m = re.match(r'UTC([+-])(\d{1,2}):(\d{2})', tz_str)
+    if not m:
+        raise ValueError(f'Invalid timezone format: {tz_str}')
+
+    sign, hours, minutes = m.groups()
+    offset = timedelta(hours=int(hours), minutes=int(minutes))
+    if sign == '-':
+        offset = -offset
+
+    tz = timezone(offset)
+    aware_dt = naive_dt.replace(tzinfo=tz)
+
+    return aware_dt.timestamp()
+      
+# 测试:
+t1 = to_timestamp('2015-6-1 08:10:30', 'UTC+7:00')
+assert t1 == 1433121030.0, t1
+
+t2 = to_timestamp('2015-5-31 16:10:30', 'UTC-09:00')
+assert t2 == 1433121030.0, t2
+
+print('ok')
 
