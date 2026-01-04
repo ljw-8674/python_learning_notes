@@ -1,11 +1,11 @@
 import argparse
 
 def main():
-    # 定义 ArgumentParser 实例
+    # 定义ArgumentParser实例
     parser = argparse.ArgumentParser(
-        prog='backup',  # 程序名
-        description='Backup MySQL database.',  # 描述
-        epilog='Copyright (r), 2025'  # 说明信息
+        prog='数据库备份程序',  # 程序名
+        description='备份MySQL数据库',  # 描述
+        epilog='这是一个假的数据库备份程序'  # 说明信息
     )
 
     # 关键字参数
