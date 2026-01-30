@@ -13,29 +13,20 @@
 1   5   10  10  5   1
 把每一行看做一个list，试写一个generator，不断输出下一行的list：
 """
-# 生成杨辉三角的每一行
-def triangles():
+def triangles(line):
     L = [1]
-    while True:
+    n = 1
+    while n <= line:
         yield L
-        # 生成下一行
-        L = [1] + [L[i] + L[i+1] for i in range(len(L)-1)] + [1]
-
-# 只取前10行，并整合为1个list
-n = 0
-results = []
-for t in triangles():
-    results.append(t)
-    n = n + 1
-    if n == 10:
-        break
+        L = [1] + [L[i] + L[i+1] for i in range(n-1)] + [1]
+        n += 1
 
 # 打印
-for t in results:
-    print(t)
+for x in triangles(10): # generator只能遍历一次
+    print(x)
 
 # 测试
-assert results == [
+assert list(triangles(10)) == [    # generator需转成list再断言
     [1],
     [1, 1],
     [1, 2, 1],
